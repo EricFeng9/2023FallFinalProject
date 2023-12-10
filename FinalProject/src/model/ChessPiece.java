@@ -2,7 +2,7 @@ package model;
 
 
 import java.awt.*;
-
+//finish
 public class ChessPiece {
     // Diamond, Circle, ...
     private String name;

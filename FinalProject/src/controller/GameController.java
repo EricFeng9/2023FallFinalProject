@@ -8,6 +8,13 @@ import view.CellComponent;
 import view.ChessComponent;
 import view.ChessboardComponent;
 
+import javax.swing.*;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Controller is the connection between model and view,
  * when a Controller receive a request from a view, the Controller
@@ -25,6 +32,15 @@ public class GameController implements GameListener {
     private ChessboardPoint selectedPoint;
     private ChessboardPoint selectedPoint2;
 
+    private JLabel statusLabel;
+
+    public JLabel getStatusLabel() {
+        return statusLabel;
+    }
+
+    public void setStatusLabel(JLabel statusLabel) {
+        this.statusLabel = statusLabel;
+    }
     public GameController(ChessboardComponent view, Chessboard model) {
         this.view = view;
         this.model = model;
@@ -34,6 +50,41 @@ public class GameController implements GameListener {
         view.initiateChessComponent(model);
         view.repaint();
     }
+
+    public void saveGameToFile(String path) {
+        List<String> saveLines = model.convertBoardToList();//读入转换好的数组（一个位置存储着棋盘一行的内容）
+        for (String line:saveLines){
+            System.out.println(line);
+        }
+        try {
+            Files.write(Path.of(path),saveLines);//写文件
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }//冯俊铭 23/12/10 22：17
+
+    public void loadGameFromFile(String path) {
+        List<String> readLines = new ArrayList<>();
+        try {
+            readLines = Files.readAllLines(Path.of(path));//将文件中的各行读取到saveLines中
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        for (String line:readLines){
+            System.out.println(line);
+        }
+        model.readListToBoard(readLines);//读入转换好的数组（一个位置存储着棋盘一行的内容）
+        //先遍历棋盘 删除掉view中各个Point点的Grid
+        for (int i = 0; i < Constant.CHESSBOARD_ROW_SIZE.getNum(); i++) {
+            for (int j = 0; j < Constant.CHESSBOARD_COL_SIZE.getNum(); j++) {
+                ChessboardPoint point = new ChessboardPoint(i,j);
+                view.removeChessComponentAtGrid(point);
+            }
+        }
+        //然后再用下面这个方法重新载入model
+        view.initiateChessComponent(model);
+        // TODO: 2023/12/10 好像要先消除再重设initiateChessComponent？？？
+    }//冯俊铭 23/12/10 22：57
 
     private void initialize() {
         for (int i = 0; i < Constant.CHESSBOARD_ROW_SIZE.getNum(); i++) {
@@ -46,6 +97,7 @@ public class GameController implements GameListener {
     // click an empty cell
     @Override
     public void onPlayerClickCell(ChessboardPoint point, CellComponent component) {
+
     }
 
     @Override
@@ -135,4 +187,6 @@ public class GameController implements GameListener {
             
         
     }
+
+
 }

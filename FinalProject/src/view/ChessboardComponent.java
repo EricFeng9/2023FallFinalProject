@@ -88,7 +88,7 @@ public class ChessboardComponent extends JComponent {
         getGridComponentAt(point).revalidate();
         chess.setSelected(false);
         return chess;
-    }
+    }//删除某点的棋子 不要改动 这个是删的最干净的方法
 
     public CellComponent getGridComponentAt(ChessboardPoint point) {
         return gridComponents[point.getRow()][point.getCol()];
@@ -105,11 +105,12 @@ public class ChessboardComponent extends JComponent {
     public void swapChess(){
         gameController.onPlayerSwapChess();
     }
+    // TODO: 2023/12/8
 
     public void nextStep(){
         gameController.onPlayerNextStep();
     }
-
+    // TODO: 2023/12/8
 
     @Override
     protected void paintComponent(Graphics g) {
