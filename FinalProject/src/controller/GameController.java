@@ -1,6 +1,7 @@
 package controller;
 
 import listener.GameListener;
+import model.Cell;
 import model.Constant;
 import model.Chessboard;
 import model.ChessboardPoint;
@@ -25,6 +26,29 @@ import java.util.List;
  *
  */
 public class GameController implements GameListener {
+    public Chessboard getModel() {
+        return model;
+    }
+
+    public void setModel(Chessboard model) {
+        this.model = model;
+    }
+
+    public ChessboardComponent getView() {
+        return view;
+    }
+
+    public void setView(ChessboardComponent view) {
+        this.view = view;
+    }
+
+    public void setScore(int score) {
+        this.score = score;
+    }
+
+    public int getFootsteps() {
+        return footsteps;
+    }
 
     private Chessboard model;
     private ChessboardComponent view;
@@ -89,7 +113,8 @@ public class GameController implements GameListener {
     @Override
     public void onPlayerNextStep() {
         // TODO: Init your next step function here.
-        boolean grid2[][]=model.candelete();Cell grid3[][]=model.getGrid();
+        boolean grid2[][]=model.candelete();
+        Cell grid3[][]=model.getGrid();
         for (int i = 0; i <Constant.CHESSBOARD_ROW_SIZE.getNum(); i++) {
             for (int j = 0; j <Constant.CHESSBOARD_COL_SIZE.getNum(); j++) {
                 if (grid2[i][j]){

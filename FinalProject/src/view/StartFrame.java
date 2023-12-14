@@ -1,6 +1,7 @@
 package view;
 
 import controller.GameController;
+import model.Chessboard;
 import view.ChessGameFrame;
 
 import javax.swing.*;
@@ -11,6 +12,7 @@ public class StartFrame extends JFrame {
     private final int HEIGHT;
     GameController gameController;
     ChessGameFrame mainFrame;
+
     public StartFrame(int width, int height, GameController gameController, ChessGameFrame mainFrame){
         this.WIDTH=width;
         this.HEIGHT = height;
@@ -55,7 +57,7 @@ public class StartFrame extends JFrame {
         button.addActionListener(e -> {
             System.out.println("Click Start");
             StartNewGameFrame startNewGameFrame = new StartNewGameFrame();
-            startNewGameFrame.startNewGameFrame(mainFrame);
+            startNewGameFrame.startNewGameFrame(mainFrame,gameController);
             startNewGameFrame.setVisible(true);
             this.setVisible(false);
         });
