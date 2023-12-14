@@ -1,4 +1,5 @@
 import controller.GameController;
+import model.Cell;
 import model.Chessboard;
 import view.ChessGameFrame;
 
@@ -17,5 +18,7 @@ public class Test {
         mainFrame.setGameController(gameController);
         gameController.setStatusLabel(mainFrame.getStatusLabel());
         gameController.loadGameFromFile("game.txt");
+
+
     }
 }

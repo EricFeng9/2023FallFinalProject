@@ -107,17 +107,55 @@ public class Chessboard {
             sb.setLength(0);//操作完成，若sb不为空，将sb清零
         return saveLines;//返回保存好的saveLine
     }//冯俊铭 23/12/10/21：55
-    public void readListToBoard(List<String> readLines){
+    public boolean readListToBoard(List<String> readLines){
+
+        //先保存一遍原来的棋盘
+        Cell[][] originGrid=new Cell[Constant.CHESSBOARD_ROW_SIZE.getNum()][Constant.CHESSBOARD_COL_SIZE.getNum()];
         for (int i = 0; i < Constant.CHESSBOARD_ROW_SIZE.getNum(); i++){
-            sb.setLength(0);//遍历每一行前先清空StringBuilder
-            //readLines数组中，每一个位置存储着一行棋盘的数据
-            String[] readline = readLines.get(i).split(","); //遍历每行时，先将其提取并分割出来
             for (int j = 0; j < Constant.CHESSBOARD_COL_SIZE.getNum(); j++){
-                ChessPiece piece = new ChessPiece(readline[j]);
-                grid[i][j].setPiece(piece);//将棋盘中对应位置的piece放进去
+                Cell origingrid = new Cell();
+                originGrid[i][j] = origingrid;
+                ChessPiece piece =grid[i][j].getPiece();
+                originGrid[i][j].setPiece(piece);
             }
         }
-        sb.setLength(0);//操作完成，若sb不为空，将sb清零
-    }//冯俊铭 23/12/23：16
+
+        if (readLines.size()==Constant.CHESSBOARD_ROW_SIZE.getNum()){
+            //读入的readLines的大小必须与棋盘行数匹配（readLines里一个位置存着棋盘里一行的数据）才能进行下一步逐行读入
+            for (int i = 0; i < Constant.CHESSBOARD_ROW_SIZE.getNum(); i++){
+                sb.setLength(0);//遍历每一行前先清空StringBuilder
+                //readLines数组中，每一个位置存储着一行棋盘的数据
+                String[] readline = readLines.get(i).split(","); //遍历每行时，先将其提取并分割出来
+
+                if (readline.length==Constant.CHESSBOARD_COL_SIZE.getNum()){
+                    //同样，分割后readline里的长度如果与当前棋盘列数匹配才能读入
+                    for (int j = 0; j < Constant.CHESSBOARD_COL_SIZE.getNum(); j++){
+                        ChessPiece piece = new ChessPiece(readline[j]);
+                        grid[i][j].setPiece(piece);//将棋盘中对应位置的piece放进去
+                    }
+                }else {
+                    //如果发现不匹配，则将棋盘改回原来的样子
+                    for (int k = 0; k < Constant.CHESSBOARD_ROW_SIZE.getNum(); k++){
+                        for (int j = 0; j < Constant.CHESSBOARD_COL_SIZE.getNum(); j++){
+                            ChessPiece piece =originGrid[k][j].getPiece();
+                            grid[k][j].setPiece(piece);
+                        }
+                    }return false;
+                }
+            }
+            sb.setLength(0);//操作完成，若sb不为空，将sb清零
+            return true;
+        }else {
+            //如果发现不匹配，则将棋盘改回原来的样子
+            for (int i = 0; i < Constant.CHESSBOARD_ROW_SIZE.getNum(); i++){
+                for (int j = 0; j < Constant.CHESSBOARD_COL_SIZE.getNum(); j++){
+                    ChessPiece piece =originGrid[i][j].getPiece();
+                    grid[i][j].setPiece(piece);
+                }
+            }return false;
+        }
+
+
+    }//冯俊铭 23/12/11 17：57
 
 }

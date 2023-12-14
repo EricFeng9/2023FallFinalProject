@@ -35,7 +35,7 @@ public class ChessGameFrame extends JFrame {
         addSwapConfirmButton();
         addNextStepButton();
         addSaveButton();//冯俊铭
-        addLoadButton();//冯俊铭
+        this.setResizable(false);//冯俊铭 设置窗口不能改变大小
     }
     public void setGameController(GameController gameController) {
         this.gameController = gameController;
@@ -101,7 +101,7 @@ public class ChessGameFrame extends JFrame {
         add(button);
     }
 
-    private void addLoadButton() {
+    /*private void addLoadButton() {
         JButton button = new JButton("Load");
        button.setLocation(HEIGTH, HEIGTH / 10 + 360);
         button.setSize(200, 60);
@@ -113,16 +113,17 @@ public class ChessGameFrame extends JFrame {
             String path = JOptionPane.showInputDialog(this,"Input Path here");
             gameController.loadGameFromFile(path);
         });
-    }//冯俊铭 23/12/10/22:56
+    }//冯俊铭 23/12/10/22:56*/
     private void addSaveButton() {
         JButton button = new JButton("Save");
-        button.setLocation(HEIGTH, HEIGTH / 10 + 440);
+        button.setLocation(HEIGTH, HEIGTH / 10 + 360);
         button.setSize(200, 60);
         button.setFont(new Font("Rockwell", Font.BOLD, 20));
         add(button);
 
         button.addActionListener(e -> {
             System.out.println("Click save");
+            FileDialog fileDialog = new FileDialog(this,"选择你要保存的路径",FileDialog.SAVE);
             String path = JOptionPane.showInputDialog(this,"Input Path here");
             gameController.saveGameToFile(path);
         });
