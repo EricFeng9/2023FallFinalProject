@@ -117,40 +117,40 @@ public class Chessboard {
             int countb4 = 0;//设置各个方向的count，总共8个若任一一个count达2说明有三个颜色相同的元素
 
             if((col1>=1&&col1<=6)&&(row1>=1&&row1<=6)){
-                if (b1.equals(grid[row1][col1+1].getPiece().getName())&&b1.equals(grid[row1][col1-1].getPiece().getName())){
+                if (b1.equals(grid[row1][col1+1].getPiece().getColor())&&b1.equals(grid[row1][col1-1].getPiece().getColor())){
                     result= true;
                 }//向左右寻找
-                if (b1.equals(grid[row1-1][col1].getPiece().getName())&&b1.equals(grid[row1+1][col1].getPiece().getName())){
+                if (b1.equals(grid[row1-1][col1].getPiece().getColor())&&b1.equals(grid[row1+1][col1].getPiece().getColor())){
                     result= true;
                 }//向上下寻找
             }//对一个交换后的棋子而言
 
             if((col2>=1&&col2<=6)&&(row2>=1&&row2<=6)){
-                if (a1.equals(grid[row2][col2+1].getPiece().getName())&&a1.equals(grid[row2][col2-1].getPiece().getName())){
+                if (a1.equals(grid[row2][col2+1].getPiece().getColor())&&a1.equals(grid[row2][col2-1].getPiece().getColor())){
                     result= true;
                 }//向左右寻找
-                if (a1.equals(grid[row2-1][col2].getPiece().getName())&&a1.equals(grid[row2+1][col2].getPiece().getName())){
+                if (a1.equals(grid[row2-1][col2].getPiece().getColor())&&a1.equals(grid[row2+1][col2].getPiece().getColor())){
                     result= true;
                 }//向上下寻找
             }//对另一个交换后棋子而言
 
             if ((col1==0||col1==7)&&(row1>=1&&row1<=6)){
-                if (b1.equals(grid[row1-1][col1].getPiece().getName())&&b1.equals(grid[row1+1][col1].getPiece().getName())){
+                if (b1.equals(grid[row1-1][col1].getPiece().getColor())&&b1.equals(grid[row1+1][col1].getPiece().getColor())){
                     result= true;
                 }//向上下寻找
             }
             if ((col2==0||col2==7)&&(row2>=1&&row2<=6)){
-                if (a1.equals(grid[row2-1][col2].getPiece().getName())&&a1.equals(grid[row2+1][col2].getPiece().getName())){
+                if (a1.equals(grid[row2-1][col2].getPiece().getColor())&&a1.equals(grid[row2+1][col2].getPiece().getColor())){
                     result= true;
                 }//向上下寻找
             }
             if ((row1==0||row1==7)&&(col1>=1&&col1<=6)){
-                if (b1.equals(grid[row1][col1+1].getPiece().getName())&&b1.equals(grid[row1][col1-1].getPiece().getName())){
+                if (b1.equals(grid[row1][col1+1].getPiece().getColor())&&b1.equals(grid[row1][col1-1].getPiece().getColor())){
                     result= true;
                 }//向左右寻找
             }
             if ((row2==0||row2==7)&&(col2>=1&&col2<=6)){
-                if (a1.equals(grid[row2][col2+1].getPiece().getName())&&a1.equals(grid[row2][col2-1].getPiece().getName())){
+                if (a1.equals(grid[row2][col2+1].getPiece().getColor())&&a1.equals(grid[row2][col2-1].getPiece().getColor())){
                     result= true;
                 }//向左右寻找
             }
@@ -200,8 +200,6 @@ public class Chessboard {
             }
             if (counta1 == 2 || counta2 == 2 || counta3 == 2 || counta4 == 2 || countb1 == 2 || countb2 == 2 || countb3 == 2 || countb4 == 2) {
                 result= true;
-            } else {
-                result= false;
             }
         }
         return result;

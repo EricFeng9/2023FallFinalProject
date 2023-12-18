@@ -47,7 +47,7 @@ public class GameController implements GameListener {
     }
 
     public int getFootsteps() {
-        return footsteps;
+        return steps;
     }
 
     private Chessboard model;
@@ -58,10 +58,10 @@ public class GameController implements GameListener {
     private ChessboardPoint selectedPoint2;
 
     private int score=0;
-    private int footsteps=0;
+    private int steps=0;
 
     public void setFootsteps(int footsteps) {
-        this.footsteps = footsteps;
+        this.steps = steps;
     }
 
     public GameController(ChessboardComponent view, Chessboard model) {
@@ -106,6 +106,7 @@ public class GameController implements GameListener {
                 //重新设置selectedPoint为null
                 selectedPoint=null;
                 selectedPoint2=null;
+                ++steps;
             }
         }
     }//江易明
@@ -122,7 +123,6 @@ public class GameController implements GameListener {
                     ChessboardPoint point=new ChessboardPoint(i,j);
                     model.removeChessPiece(point);
                     score=score+10;
-                    ++footsteps;
                 }
             }
         }
@@ -140,6 +140,11 @@ public class GameController implements GameListener {
         //TODO:2023/12/12 上面棋子掉落下来
         // TODO: 2023/12/12 添加新棋子
         // TODO: 2023/12/12 view.initiateChessComponent(model);
+        System.out.println("现在的分数是："+score);
+        System.out.println("已经走的步数是"+steps);
+        if (!model.ismatch()){
+            isnextlevel(steps,score);
+        }
         System.out.println("Implement your next step here.");
     }//江易明
 
@@ -261,4 +266,80 @@ public class GameController implements GameListener {
 
 
     }//冯俊铭 23/12/11 18：08
+
+    public boolean passorfalse(){
+        return false;
+    }//TODO:判断步数是否为零
+    int level=1;
+    int levelsteps;
+    int showsteps;
+
+    public void setSteps(int steps) {
+        this.steps = steps;
+    }
+
+    int minscore;
+
+    public int getLevel() {
+        return level;
+    }
+
+    public void setLevel(int level) {
+        this.level = level;
+    }
+
+    public void isnextlevel(int steps, int score){
+        switch (level){
+            case 1:
+                System.out.println("现在在第一关");
+                minscore=200;//test
+                levelsteps=20;
+                showsteps=levelsteps-steps;
+                System.out.println("剩余步数为"+showsteps);
+                if (showsteps>=0){
+                    if (score>=minscore){
+                        score=0;
+                        level++;
+                        System.out.println("pass");//TODO:弹窗您成功通过第一关，选择窗口是否进入第二关 or save；
+                        steps=0;
+                    }
+
+                }if (showsteps==0&&score<minscore){
+                    System.out.println("Sorry,you failed");//TODO:弹窗对不起您失败了。
+                }
+                break;
+            case 2:
+                System.out.println("现在进入第二关");
+                minscore=10000;
+                levelsteps=15;
+                showsteps=levelsteps-steps;
+                if (showsteps>=0){
+                    if (score>=minscore){
+                        score=0;
+                        level++;
+                        System.out.println("pass");//TODO:弹窗您成功通过第二关，选择窗口是否进入第三关 or save；
+                        steps=0;
+                    }
+                }if (showsteps==0&&score<minscore){
+                    System.out.println("Sorry,you failed");//TODO:弹窗对不起您失败了。
+                }
+                break;
+            case 3:
+                System.out.println("现在进入第三关");
+                minscore=10000;
+                levelsteps=10;
+                showsteps=levelsteps-steps;
+                if (showsteps>=0){
+                    if (score>=minscore){
+                        score=0;
+                        System.out.println("pass");//TODO:弹窗您成功通过第三关，gratulation；
+                    }
+
+                }if (showsteps==0&&score<minscore){
+                    System.out.println("Sorry,you failed");//TODO:弹窗对不起您失败了。
+                }
+                break;
+        }
+    }//江易明and冯俊铭 2023.12.18
+
 }

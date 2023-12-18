@@ -86,6 +86,9 @@ public class StartNewGameFrame extends JFrame {
             }
             view.initiateChessComponent(gameController.getModel());
             gameController.setView(view);
+            gameController.setScore(0);
+            gameController.setSteps(0);
+            gameController.setLevel(1);
             mainFrame.setGameController(gameController);
             mainFrame.setVisible(true);
             this.setVisible(false);
