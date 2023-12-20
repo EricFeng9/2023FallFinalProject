@@ -715,7 +715,7 @@ public class Chessboard {
         sb.setLength(0);//操作完成，若sb不为空，将sb清零
         return saveLines;//返回保存好的saveLine
     }//冯俊铭 23/12/10/21：55
-    public boolean readListToBoard(List<String> readLines){
+    public int readListToBoard(List<String> readLines){
 
         //先保存一遍原来的棋盘
         Cell[][] originGrid=new Cell[Constant.CHESSBOARD_ROW_SIZE.getNum()][Constant.CHESSBOARD_COL_SIZE.getNum()];
@@ -738,6 +738,9 @@ public class Chessboard {
                 if (readline.length==Constant.CHESSBOARD_COL_SIZE.getNum()){
                     //同样，分割后readline里的长度如果与当前棋盘列数匹配才能读入
                     for (int j = 0; j < Constant.CHESSBOARD_COL_SIZE.getNum(); j++){
+                        if (!(readline[j].equals("💎")||readline[j].equals("⚪")||readline[j].equals("▲")||readline[j].equals("🔶"))){
+                            return 103;
+                        }
                         ChessPiece piece = new ChessPiece(readline[j]);
                         grid[i][j].setPiece(piece);//将棋盘中对应位置的piece放进去
                     }
@@ -748,11 +751,11 @@ public class Chessboard {
                             ChessPiece piece =originGrid[k][j].getPiece();
                             grid[k][j].setPiece(piece);
                         }
-                    }return false;
+                    }return 102;
                 }
             }
             sb.setLength(0);//操作完成，若sb不为空，将sb清零
-            return true;
+            return 100;
         }else {
             //如果发现不匹配，则将棋盘改回原来的样子
             for (int i = 0; i < Constant.CHESSBOARD_ROW_SIZE.getNum(); i++){
@@ -760,7 +763,7 @@ public class Chessboard {
                     ChessPiece piece =originGrid[i][j].getPiece();
                     grid[i][j].setPiece(piece);
                 }
-            }return false;
+            }return 102;
         }
 
 

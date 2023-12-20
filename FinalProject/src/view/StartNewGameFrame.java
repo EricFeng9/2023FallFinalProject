@@ -7,12 +7,16 @@ import model.Constant;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.TextEvent;
+import java.awt.event.TextListener;
 
 public class StartNewGameFrame extends JFrame {
 
     GameController gameController;
     ChessGameFrame mainFrame;
     Chessboard chessboard;
+    String gamename;
+
 
     public GameController getGameController() {
         return gameController;
@@ -74,7 +78,7 @@ public class StartNewGameFrame extends JFrame {
         startButton.setSize(146,46);
         startButton.addActionListener(e -> {
             while (chessboard.ismatch()){
-               gameController.onPlayerNextStep();
+               gameController.onPlayerInitiateNextStep();
             }
             ChessboardComponent view = gameController.getView();
             //先遍历棋盘 删除掉view中各个Point点的Grid
@@ -89,7 +93,10 @@ public class StartNewGameFrame extends JFrame {
             gameController.setScore(0);
             gameController.setSteps(0);
             gameController.setLevel(1);
+            gameController.setName(gamename);//设置存档名
             mainFrame.setGameController(gameController);
+            System.out.println("——————游戏初始化完毕——————");//试输出存档名
+            System.out.println("当前游戏存档名为："+gamename);//试输出存档名
             mainFrame.setVisible(true);
             this.setVisible(false);
         });
@@ -118,13 +125,21 @@ public class StartNewGameFrame extends JFrame {
         startLabel.setVisible(true);
     }
     private void addnameTextField(){
-        JTextField nameTextField = new JFormattedTextField();
+        TextField nameTextField = new TextField();
         Font font =new Font("雅黑",Font.PLAIN,16);
         nameTextField.setFont(font);
         nameTextField.setText("请输入你的存档名称");
         nameTextField.setLocation(110,70);
         nameTextField.setSize(170,20);
         this.add(nameTextField);
+        nameTextField.addTextListener(new TextListener() {
+            @Override
+            public void textValueChanged(TextEvent e) {
+                System.out.println("当前内容："+nameTextField.getText());
+                gamename =nameTextField.getText();
+            }
+        });
+
         nameTextField.setVisible(true);
     }
     private void addmodeLabel(){

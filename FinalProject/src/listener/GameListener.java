@@ -11,7 +11,7 @@ public interface GameListener {
 
     void onPlayerClickChessPiece(ChessboardPoint point, ChessComponent component);
 
-    public void onPlayerSwapChess();
+    public int onPlayerSwapChess();
 
     public void onPlayerNextStep();
 

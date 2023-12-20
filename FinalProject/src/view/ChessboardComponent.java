@@ -80,11 +80,15 @@ public class ChessboardComponent extends JComponent {
 
     public ChessComponent removeChessComponentAtGrid(ChessboardPoint point) {
         // Note re-validation is required after remove / removeAll.
-        ChessComponent chess = (ChessComponent) getGridComponentAt(point).getComponents()[0];
-        getGridComponentAt(point).removeAll();
-        getGridComponentAt(point).revalidate();
-        chess.setSelected(false);
-        return chess;
+        if (getGridComponentAt(point).getComponents().length!=0){
+            //冯俊铭 如果能get到ChessComponet组件才执行下面的方法
+            ChessComponent chess = (ChessComponent) getGridComponentAt(point).getComponents()[0];
+            getGridComponentAt(point).removeAll();
+            getGridComponentAt(point).revalidate();
+            chess.setSelected(false);
+            return chess;
+        }return null;
+
     }//删除某点的棋子 不要改动 这个是删的最干净的方法
 
     public CellComponent getGridComponentAt(ChessboardPoint point) {
@@ -99,10 +103,12 @@ public class ChessboardComponent extends JComponent {
         return new Point(col * CHESS_SIZE, row * CHESS_SIZE);
     }
 
-    public void swapChess(){
-        gameController.onPlayerSwapChess();
+    public boolean swapChess(){
+        if (gameController.onPlayerSwapChess()==100){
+            return true;
+        }else return false;
     }
-    // TODO: 2023/12/8
+
 
     public void nextStep(){
         gameController.onPlayerNextStep();
