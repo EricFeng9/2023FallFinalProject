@@ -95,34 +95,68 @@ public class GameController implements GameListener {
     public void onPlayerClickCell(ChessboardPoint point, CellComponent component) {
     }
 
-    boolean swapdelete = true;
+    boolean swapdelete = true;// TODO: 2023/12/20
 
     @Override
     public int onPlayerSwapChess() {
-        // TODO: Init your swap function here.
-        System.out.println("Implement your swap here.");
-        if (swapdelete) {
-            if (selectedPoint != null && selectedPoint2 != null) {
-                if (model.canSwap(selectedPoint, selectedPoint2)) {
-                    model.swapChessPiece(selectedPoint, selectedPoint2);
-                    //remove view 中的两个棋子
-                    ChessComponent chess1 = view.removeChessComponentAtGrid(selectedPoint);
-                    ChessComponent chess2 = view.removeChessComponentAtGrid(selectedPoint2);
-                    //在set view中两个棋子
-                    view.setChessComponentAtGrid(selectedPoint, chess2);
-                    view.setChessComponentAtGrid(selectedPoint2, chess1);
-                    //交换过来后需要重新绘制
-                    chess1.repaint();
-                    chess2.repaint();
-                    //重新设置selectedPoint为null
-                    selectedPoint = null;
-                    selectedPoint2 = null;
-                    ++steps;
-                    swapdelete = false;
-                    return 100;//返回100表示交换成功
-                } else return 101;//返回101表示交换失败
-            } else return 102;//额 反正不行就返回102呗
-        } else return 103;//TODO:失败 江易明12.19更改
+        if (selectedPoint != null && selectedPoint2 != null && !model.ismatch()) {
+            //必须得选中两个点、且棋盘上没有可以消除的棋子才可以执行交换消除方法
+            if (model.canSwap(selectedPoint, selectedPoint2)) {
+                model.swapChessPiece(selectedPoint, selectedPoint2);
+                //remove view 中的两个棋子
+                ChessComponent chess1 = view.removeChessComponentAtGrid(selectedPoint);
+                ChessComponent chess2 = view.removeChessComponentAtGrid(selectedPoint2);
+                //在set view中两个棋子
+                view.setChessComponentAtGrid(selectedPoint, chess2);
+                view.setChessComponentAtGrid(selectedPoint2, chess1);
+                //交换过来后需要重新绘制
+                chess1.repaint();
+                chess2.repaint();
+                //重新设置selectedPoint为null
+                selectedPoint = null;
+                selectedPoint2 = null;
+                {//交换后执行消除
+                    boolean grid2[][] = model.candelete();
+                    Cell grid3[][] = model.getGrid();
+                    for (int i = 0; i < Constant.CHESSBOARD_ROW_SIZE.getNum(); i++) {
+                        for (int j = 0; j < Constant.CHESSBOARD_COL_SIZE.getNum(); j++) {
+                            if (grid2[i][j]) {
+                                ChessboardPoint point = new ChessboardPoint(i, j);
+                                model.removeChessPiece(point);
+                                view.removeChessComponentAtGrid(point);
+                                score = score + 10;
+                            }
+                        }
+                    }
+                }//消除完毕
+                view.repaint();//冯俊铭 !!交换后执行repaint()重绘该组件 避免摇一摇更新
+                ++steps;
+                //swapdelete = false;
+                System.out.println("成功执行了交换");
+                nextstep =1;//fjm !!一旦交换，则将nextstep必须改成1 避免交换后nextstep执行case2方法导致棋子不下落而直接生成新的
+                return 100;//返回100表示交换且消除成功
+            } else return 101;//返回101表示交换失败
+        } else if (model.ismatch()) {
+            //如果棋盘中还有能消除的棋子则先消除 这里可能会报错，但是无所谓，不影响
+            boolean grid2[][] = model.candelete();
+            Cell grid3[][] = model.getGrid();
+            for (int i = 0; i < Constant.CHESSBOARD_ROW_SIZE.getNum(); i++) {
+                for (int j = 0; j < Constant.CHESSBOARD_COL_SIZE.getNum(); j++) {
+                    if (grid2[i][j]) {
+                        ChessboardPoint point = new ChessboardPoint(i, j);
+                        model.removeChessPiece(point);
+                        view.removeChessComponentAtGrid(point);
+                        score = score + 10;
+                    }
+                }
+            }
+            //消除完毕
+            view.repaint();//冯俊铭 !!交换后执行repaint()重绘该组件 避免摇一摇更新
+            System.out.println("交换未执行，消除了棋盘上还可以消除的棋子");
+            nextstep =1;//fjm !!一旦交换，则将nextstep必须改成1 避免交换后nextstep执行case2方法导致棋子不下落而直接生成新的
+            return 103;//返回103表示没有交换，消除了棋盘上还能消除的棋子
+        } else return 102;//返回102表示没有选择两个点，且棋盘上已经没有棋子可以消除了
+
 
     }//江易明
 
@@ -140,17 +174,18 @@ public class GameController implements GameListener {
     public void onPlayerNextStep() {
         switch (nextstep) {
             case 1:
-                boolean grid2[][] = model.candelete();
+                /*boolean grid2[][] = model.candelete();
                 Cell grid3[][] = model.getGrid();
                 for (int i = 0; i < Constant.CHESSBOARD_ROW_SIZE.getNum(); i++) {
                     for (int j = 0; j < Constant.CHESSBOARD_COL_SIZE.getNum(); j++) {
                         if (grid2[i][j]) {
                             ChessboardPoint point = new ChessboardPoint(i, j);
                             model.removeChessPiece(point);
+                            view.removeChessComponentAtGrid(point);
                             score = score + 10;
                         }
                     }
-                }
+                }*/ //冯俊铭 12.20 把这段去掉了 交换消除放在swap里面
                 model.candrap();//掉落棋子
                 //先遍历棋盘 删除掉view中各个Point点的Grid
                 for (int i = 0; i < Constant.CHESSBOARD_ROW_SIZE.getNum(); i++) {
@@ -161,6 +196,7 @@ public class GameController implements GameListener {
                     }
                 }
                 view.initiateChessComponent(model);
+                view.repaint();//冯俊铭 !!交换后执行repaint()重绘该组件 避免摇一摇更新
                 System.out.println("刚刚点击的那下是case1");
                 nextstep = 2;
                 break;
@@ -176,13 +212,12 @@ public class GameController implements GameListener {
                     }
                 }
                 view.initiateChessComponent(model);
+                view.repaint();//冯俊铭 !!交换后执行repaint()重绘该组件 避免摇一摇更新
                 swapdelete = true;
-                //TODO:2023/12/12 上面棋子掉落下来
-                // TODO: 2023/12/12 添加新棋子
-                // TODO: 2023/12/12 view.initiateChessComponent(model);
                 System.out.println("现在的分数是：" + score);
                 System.out.println("已经走的步数是" + steps);
-                isnextlevel();//冯俊铭 不用传参数 score和steps就在GameController里面
+                //isnextlevel();//冯俊铭 不用传参数 score和steps就在GameController里面
+                //冯俊铭 12.20 把上面的注释掉了，判断是否进入下一关应该放在swap中
                 nextstep=1;
                 System.out.println("刚刚点击的那下是case2");
                 break;

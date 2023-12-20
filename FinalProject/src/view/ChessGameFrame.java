@@ -24,6 +24,9 @@ public class ChessGameFrame extends JFrame {
     private JLabel scoreLabel;//fjm
     private JLabel stepLabel;//fjm
     private JLabel levelLable;//fjm
+    private JButton nextStepButton;//fjm
+    private JButton swapButton;//fjm
+
     public ChessGameFrame(int width, int height) {
         setTitle("2023 CS109 Project Demo"); //设置标题
         this.WIDTH = width;
@@ -42,10 +45,12 @@ public class ChessGameFrame extends JFrame {
         add(levelLable);
         add(scoreLabel);
         add(stepLabel);
+        this.nextStepButton =addNextStepButton();
+        add(nextStepButton);
+        this.swapButton = addSwapConfirmButton();
+        add(swapButton);
         addChessboard();
         addHelloButton();
-        addSwapConfirmButton();
-        addNextStepButton();
         addSaveButton();//冯俊铭
 
         this.setResizable(false);//冯俊铭 设置窗口不能改变大小
@@ -128,28 +133,61 @@ public class ChessGameFrame extends JFrame {
         this.viewSteps = viewSteps;
     }
 
-    private void addSwapConfirmButton() {
+    private JButton addSwapConfirmButton() {
         JButton button = new JButton("Confirm Swap");
         button.addActionListener((e) -> {
-            if (chessboardComponent.swapChess()){
-                //若交换成功就更新步数
-                {//更新步数标签
-                    this.viewSteps=gameController.getFootsteps();//同理 -> gameController里的steps变量
-                    System.out.println("当前应显示步数为："+viewSteps);
-                    this.stepLabel.setText("当前步数:"+viewSteps);
+            int swapreturnvalue = 0;
+            swapreturnvalue = chessboardComponent.swapChess();
+            /*try{
+                swapreturnvalue = chessboardComponent.swapChess();
+            }catch (Exception e1){
+                //如果抛出异常（一般是null），则说明当前棋盘上有空格子，不能进行交换
+                System.out.println(swapreturnvalue+"出错了，错误为："+e1.toString());
+                JOptionPane.showMessageDialog(this,"当前棋盘上有空格子，请点击“下一步”进行下落棋子和重新生成新的棋子","还不能交换！！！",JOptionPane.WARNING_MESSAGE);
+            }*/// TODO: 2023/12/20 这个部分很奇怪 先暂时注释掉 
+            //如果返回是0，有可能是也消除成功了！就是棋盘上新棋子生成后，不需要交换就存在可以消除的棋子的情况
+            //返回100表示交换且消除成功
+            //返回101表示交换失败
+            //返回102表示只选择了一个点
+
+            if (swapreturnvalue==101) {
+                JOptionPane.showMessageDialog(this,"这两个格子不能交换噢","错误啦！！！",JOptionPane.WARNING_MESSAGE);
+            }else if (swapreturnvalue==102) {
+                JOptionPane.showMessageDialog(this,"请选择两个格子进行交换","棋盘上已经没有棋子可以消除了",JOptionPane.WARNING_MESSAGE);
+            }else {
+                //若交换且消除成功就更新标签
+                {//更新标签
+                    {//更新分数标签
+                        this.viewScores = gameController.getScore();//从gameController里直接获得游戏分数 -> gameController里的score变量
+                        System.out.println("当前应显示分数为：" + viewScores);
+                        this.scoreLabel.setText("当前分数:" + viewScores);//将取到的游戏分数修改到Label上
+                    }
+                    {//更新步数标签
+                        this.viewSteps = gameController.getFootsteps();//同理 -> gameController里的steps变量
+                        System.out.println("当前应显示步数为：" + viewSteps);
+                        this.stepLabel.setText("当前步数:" + viewSteps);
+                    }
+                    {//更新关卡标签
+                        this.viewlevel = gameController.getLevel();//同理 -> gameController里的level变量
+                        System.out.println("当前应显示关卡为：" + viewlevel);
+                        this.levelLable.setText("当前关卡：" + viewlevel);
+                    }
                 }
-            }//fjm
+            }
+            //fjm
 
         });
         button.setLocation(HEIGTH, HEIGTH / 10 + 200);
         button.setSize(200, 60);
         button.setFont(new Font("Rockwell", Font.BOLD, 20));
-        add(button);
+        return button;
     }
 
-    private void addNextStepButton() {
+    private JButton addNextStepButton() {
         JButton button = new JButton("Next Step");
         button.addActionListener((e) -> {
+            //已解决：case1是下落，case2是补充新棋子，现在有一个问题，如果我在交换前先点击一次nextstep，那么就进入case2，则交换后再点击nextstep则不会下落，直接生成新棋子了
+            //解决方法：在gameController下的交换方法中进行补充，使得每次交换后nextstep都必须为1，具体可以到gameController下的那个方法去看
             chessboardComponent.nextStep();
             {//更新分数标签
                 this.viewScores=gameController.getScore();//从gameController里直接获得游戏分数 -> gameController里的score变量
@@ -170,7 +208,7 @@ public class ChessGameFrame extends JFrame {
         button.setLocation(HEIGTH, HEIGTH / 10 + 280);
         button.setSize(200, 60);
         button.setFont(new Font("Rockwell", Font.BOLD, 20));
-        add(button);
+        return button;
     }//冯俊铭
 
     /*private void addLoadButton() {

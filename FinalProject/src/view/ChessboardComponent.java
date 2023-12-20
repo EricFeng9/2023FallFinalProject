@@ -103,12 +103,18 @@ public class ChessboardComponent extends JComponent {
         return new Point(col * CHESS_SIZE, row * CHESS_SIZE);
     }
 
-    public boolean swapChess(){
-        if (gameController.onPlayerSwapChess()==100){
-            return true;
-        }else return false;
+    public int swapChess() {
+        if (gameController.onPlayerSwapChess() == 100) {
+            return 100;
+        } else if (gameController.onPlayerSwapChess() == 101) {
+            return 101;
+        } else if (gameController.onPlayerSwapChess() == 102) {
+            return 102;
+        } else return 0;//执行出错就会返回0（比如说有空的情况）,但是某种情况下，成功消除也会返回0
     }
-
+        //返回100表示交换且消除成功
+        //返回101表示交换失败
+        //返回102表示没有选择两个点，且棋盘上已经没有棋子可以消除了
 
     public void nextStep(){
         gameController.onPlayerNextStep();
