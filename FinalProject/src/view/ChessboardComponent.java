@@ -23,6 +23,14 @@ public class ChessboardComponent extends JComponent {
 
     private GameController gameController;
 
+    public GameController getGameController() {
+        return gameController;
+    }
+
+    public void setGameController(GameController gameController) {
+        this.gameController = gameController;
+    }
+
     public ChessboardComponent(int chessSize) {
         CHESS_SIZE = chessSize;
         int width = CHESS_SIZE * 8;
@@ -112,15 +120,27 @@ public class ChessboardComponent extends JComponent {
             return 102;
         } else return 0;//执行出错就会返回0（比如说有空的情况）,但是某种情况下，成功消除也会返回0
     }
-        //返回100表示交换且消除成功
-        //返回101表示交换失败
-        //返回102表示没有选择两个点，且棋盘上已经没有棋子可以消除了
 
-    public void nextStep(){
+    //返回100表示交换且消除成功
+    //返回101表示交换失败
+    //返回102表示没有选择两个点，且棋盘上已经没有棋子可以消除了
+    public int autoSwapChess() {
+        if (gameController.onPlayerSwapChess() == 100) {
+            return 100;
+        } else if (gameController.onPlayerSwapChess() == 101) {
+            return 101;
+        } else if (gameController.onPlayerSwapChess() == 102) {
+            return 102;
+        } else return 0;//执行出错就会返回0（比如说有空的情况）,但是某种情况下，成功消除也会返回0
+    }
+
+    public void nextStep() {
         gameController.onPlayerNextStep();
     }
-    // TODO: 2023/12/8
 
+    public void autoNextStep(){
+        gameController.onPlayerAutoNextStep();
+    }//冯俊铭 调用自动的下一步
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
@@ -138,6 +158,8 @@ public class ChessboardComponent extends JComponent {
                 System.out.print("One chess here and ");
                 gameController.onPlayerClickChessPiece(getChessboardPoint(e.getPoint()), (ChessComponent) clickedComponent.getComponents()[0]);
             }
+            //冯俊铭 每点击一次格子，让gameController执行自动化方法
+            gameController.Auto();
         }
     }
 }

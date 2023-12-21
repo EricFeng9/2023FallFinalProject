@@ -17,6 +17,7 @@ public class StartNewGameFrame extends JFrame {
     Chessboard chessboard;
     String gamename;
     Choice modechoice;
+    JCheckBox isIronCheckbox;
 
     public GameController getGameController() {
         return gameController;
@@ -62,7 +63,8 @@ public class StartNewGameFrame extends JFrame {
         addnameTextField();
         addsavingLabel();
         addmodeLabel();
-        addCheckBox1();
+        this.isIronCheckbox=addCheckBox1();
+        add(isIronCheckbox);
         addCheckBox2();
         this.modechoice = addmodechoice();
         add(modechoice);
@@ -80,7 +82,7 @@ public class StartNewGameFrame extends JFrame {
         startButton.addActionListener(e -> {
             //初始化model棋盘
             while (chessboard.ismatch()){
-               gameController.onPlayerInitiateNextStep();
+               gameController.onPlayerAutoNextStep();
             }
             //先把gameController中的view取出来（无所谓这个view长什么样）
             ChessboardComponent view = gameController.getView();
@@ -100,18 +102,27 @@ public class StartNewGameFrame extends JFrame {
             gameController.setSteps(0);
             gameController.setLevel(1);
             gameController.setName(gamename);//设置存档名
-            mainFrame.setGameController(gameController);
-            mainFrame.setTitle(gamename+"的游戏");
+            gameController.isIronMode= isIronCheckbox.isSelected();//设置铁人模式
+            if (isIronCheckbox.isSelected()){
+                mainFrame.setTitle(gamename+"的游戏 【铁人模式】");
+            }else mainFrame.setTitle(gamename+"的游戏");
 
             if (modechoice.getSelectedItem().equals("手动模式") && gamename!=null){
                 gameController.setMode(1);//手动模式为模式1
-                System.out.println("——————游戏初始化完毕——————");//试输出存档名
+                mainFrame.getGameControllerToLoadViewMode(gameController);
+                System.out.println("——————游戏初始化完毕——————");
                 System.out.println("当前游戏存档名为："+gamename);//试输出存档名
+                System.out.println("当前游戏模式为："+mainFrame.getViewMode());//试输出模式
                 mainFrame.setVisible(true);
                 this.setVisible(false);
             }else if(modechoice.getSelectedItem().equals("自动模式")&& gamename!=null){
                 gameController.setMode(2);//自动模式为模式2
-                // TODO: 2023/12/21 打开自动模式的窗口
+                mainFrame.getGameControllerToLoadViewMode(gameController);
+                System.out.println("——————游戏初始化完毕——————");
+                System.out.println("当前游戏存档名为："+gamename);//试输出存档名
+                System.out.println("当前游戏模式为："+mainFrame.getViewMode());//试输出模式
+                mainFrame.setVisible(true);
+                this.setVisible(false);
             } else if (gamename==null) {
                 JOptionPane.showMessageDialog(this,"还没有输入存档名","还不能开始噢",JOptionPane.WARNING_MESSAGE);
             } else{
@@ -121,7 +132,7 @@ public class StartNewGameFrame extends JFrame {
         });
         this.add(startButton);
         startButton.setVisible(true);
-    }
+    }//fjm
     private void addstartLabel(){
         JLabel startLabel = new JLabel();
         Font font =new Font("雅黑",Font.PLAIN,25);
@@ -184,15 +195,14 @@ public class StartNewGameFrame extends JFrame {
         return choice;
     }
 
-    private void addCheckBox1(){
+    private JCheckBox addCheckBox1(){
         JCheckBox checkBox1 = new JCheckBox();
         Font font =new Font("雅黑",Font.PLAIN,15);
         checkBox1.setFont(font);
         checkBox1.setText("铁人游戏（无法存档）");
         checkBox1.setLocation(20,180);
         checkBox1.setSize(175,15);
-        this.add(checkBox1);
-        checkBox1.setVisible(true);
+        return checkBox1;
     }
     private void addCheckBox2(){
         JCheckBox checkBox2 = new JCheckBox();

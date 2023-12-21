@@ -4,6 +4,7 @@ import listener.GameListener;
 import model.*;
 import view.CellComponent;
 import view.ChessComponent;
+import view.ChessGameFrame;
 import view.ChessboardComponent;
 
 import java.io.IOException;
@@ -11,6 +12,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Controller is the connection between model and view,
@@ -25,11 +27,13 @@ public class GameController implements GameListener {
     int showsteps;
     private Chessboard model;
     private ChessboardComponent view;
+    private ChessGameFrame mainFrame;
 
     // Record whether there is a selected piece before
     private ChessboardPoint selectedPoint;
     private ChessboardPoint selectedPoint2;
 
+    public Boolean isIronMode=false;//fjm 用来判断是不是铁人模式
     public String getName() {
         return name;
     }
@@ -80,16 +84,20 @@ public class GameController implements GameListener {
         this.steps = steps;
     }
 
-    public GameController(ChessboardComponent view, Chessboard model) {
+    public GameController(ChessboardComponent view, Chessboard model,ChessGameFrame mainFrame) {
         this.view = view;
         this.model = model;
-
+        //!!注意理解 这里是调用而非生成新的
         view.registerController(this);
+        //使
+        registerMainFrame(mainFrame);
         initialize();
         view.initiateChessComponent(model);
         view.repaint();
     }
-
+    private void registerMainFrame(ChessGameFrame mainFrame){
+        this.mainFrame = mainFrame;
+    }//冯俊铭 23/12/21 使GameController也可以调用mainFrame相关的方法
     private void initialize() {
         for (int i = 0; i < Constant.CHESSBOARD_ROW_SIZE.getNum(); i++) {
             for (int j = 0; j < Constant.CHESSBOARD_COL_SIZE.getNum(); j++) {
@@ -141,6 +149,7 @@ public class GameController implements GameListener {
                 ++steps;
                 //swapdelete = false;
                 System.out.println("成功执行了交换");
+                isnextlevel();//冯俊铭 判断是否进入下一关！！之前没加这个所以换不了关
                 nextstep =1;//fjm !!一旦交换，则将nextstep必须改成1 避免交换后nextstep执行case2方法导致棋子不下落而直接生成新的
                 return 100;//返回100表示交换且消除成功
             } else return 101;//返回101表示交换失败
@@ -232,7 +241,7 @@ public class GameController implements GameListener {
         }
     }//江易明
 
-    public void onPlayerInitiateNextStep() {
+    public void onPlayerAutoNextStep() {
         // 这是游戏初始化的时候使用的nextstep方法
         boolean grid2[][]=model.candelete();
         Cell grid3[][]=model.getGrid();
@@ -497,5 +506,22 @@ public class GameController implements GameListener {
         }
     }//江易明and冯俊铭 2023.12.18
 
+    public void Auto() {
+        //这个自动方法只有在模式2才生效，模式1不生效 且 只有选中了两个格子才能生效
+        if (mode ==2 && selectedPoint!=null && selectedPoint2!=null){
+            System.out.println("调用了自动化方法");
+            onPlayerSwapChess();//先执行交换消除
+            onPlayerNextStep();//掉落
+            onPlayerNextStep();//生成新的
+            mainFrame.updateLables();//mainFrame更新标签
+            while (model.ismatch()){
+                //如果棋盘上还有可以消除的，则循环运行这三个方法
+                onPlayerSwapChess();//先执行交换消除
+                onPlayerNextStep();//掉落
+                onPlayerNextStep();//生成新的
+                mainFrame.updateLables();//mainFrame更新标签
+            }
 
+        }
+    }//冯俊铭
 }

@@ -12,6 +12,7 @@ public class StartFrame extends JFrame {
     private final int HEIGHT;
     GameController gameController;
     ChessGameFrame mainFrame;
+    JLabel notiecLable;
 
     public StartFrame(int width, int height, GameController gameController, ChessGameFrame mainFrame){
         this.WIDTH=width;
@@ -22,9 +23,18 @@ public class StartFrame extends JFrame {
         setLayout(null);
         this.gameController = gameController;
         this.mainFrame=mainFrame;
+        this.notiecLable = addNoticeLabel();
+        add(notiecLable);
         addLoadButton();
         addStartButton();
         this.setResizable(false);//冯俊铭 设置窗口不能改变大小
+    }
+    private JLabel addNoticeLabel(){
+        JLabel label = new JLabel("<html>这是南方科技大学2023秋JavaA期末project<br>开发者：冯俊铭、江易明<br>这就是一个测试版，请勿外传<br>当前exe版本:1.0Alpha</html>");
+        label.setLocation(30,50);
+        label.setFont(new Font("雅黑", Font.PLAIN, 12));
+        label.setSize(300,90);
+        return label;
     }
     private void addLoadButton() {
         JButton button = new JButton("加载游戏");
@@ -48,16 +58,24 @@ public class StartFrame extends JFrame {
                 int returnError = gameController.loadGameFromFile(path);//执行文件载入方法并且得到个返回值
                 if (returnError==1001){
                     //1001表示导入成功且为手动模式
-                    System.out.println("导入成功，现在是手动模式");
+                    mainFrame.getGameControllerToLoadViewMode(gameController);
+                    System.out.println("——————游戏导入化完毕——————");
+                    System.out.println("当前游戏存档名为："+gameController.getName());//试输出存档名
+                    System.out.println("当前游戏模式为："+mainFrame.getViewMode());//试输出模式
                     //更新标签
                     mainFrame.updateLables();
                     mainFrame.setVisible(true);
                     this.setVisible(false);
                 }if (returnError==1002){
                     //1002表示导入成功且为自动模式
-                    System.out.println("导入成功");
-                    System.out.println("还没有添加打开自动模式的窗口的代码");
-                    // TODO: 2023/12/21 打开自动模式的窗口
+                    mainFrame.getGameControllerToLoadViewMode(gameController);
+                    System.out.println("——————游戏导入化完毕——————");
+                    System.out.println("当前游戏存档名为："+gameController.getName());//试输出存档名
+                    System.out.println("当前游戏模式为："+mainFrame.getViewMode());//试输出模式
+                    //更新标签
+                    mainFrame.updateLables();
+                    mainFrame.setVisible(true);
+                    this.setVisible(false);
                     //更新标签
                     /*mainFrame.updateLables();
                     mainFrame.setVisible(true);
