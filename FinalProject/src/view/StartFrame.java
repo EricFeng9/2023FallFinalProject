@@ -46,10 +46,22 @@ public class StartFrame extends JFrame {
                 JOptionPane.showMessageDialog(this,"错误：存档文件格式应该为txt文本","错误101:载入错误",JOptionPane.WARNING_MESSAGE);
             }else{
                 int returnError = gameController.loadGameFromFile(path);//执行文件载入方法并且得到个返回值
-                if (returnError==100){
-                    System.out.println("导入成功");
+                if (returnError==1001){
+                    //1001表示导入成功且为手动模式
+                    System.out.println("导入成功，现在是手动模式");
+                    //更新标签
+                    mainFrame.updateLables();
                     mainFrame.setVisible(true);
                     this.setVisible(false);
+                }if (returnError==1002){
+                    //1002表示导入成功且为自动模式
+                    System.out.println("导入成功");
+                    System.out.println("还没有添加打开自动模式的窗口的代码");
+                    // TODO: 2023/12/21 打开自动模式的窗口
+                    //更新标签
+                    /*mainFrame.updateLables();
+                    mainFrame.setVisible(true);
+                    this.setVisible(false);*/
                 } else if (returnError==102) {
                     JOptionPane.showMessageDialog(this,"错误：载入存档不符合棋盘规则","错误102:载入错误",JOptionPane.WARNING_MESSAGE);
                     //如果加载不成功 就弹出报错框

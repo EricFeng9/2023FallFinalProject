@@ -52,7 +52,6 @@ public class ChessGameFrame extends JFrame {
         addChessboard();
         addHelloButton();
         addSaveButton();//冯俊铭
-
         this.setResizable(false);//冯俊铭 设置窗口不能改变大小
     }
     public void setGameController(GameController gameController) {
@@ -156,23 +155,7 @@ public class ChessGameFrame extends JFrame {
                 JOptionPane.showMessageDialog(this,"请选择两个格子进行交换","棋盘上已经没有棋子可以消除了",JOptionPane.WARNING_MESSAGE);
             }else {
                 //若交换且消除成功就更新标签
-                {//更新标签
-                    {//更新分数标签
-                        this.viewScores = gameController.getScore();//从gameController里直接获得游戏分数 -> gameController里的score变量
-                        System.out.println("当前应显示分数为：" + viewScores);
-                        this.scoreLabel.setText("当前分数:" + viewScores);//将取到的游戏分数修改到Label上
-                    }
-                    {//更新步数标签
-                        this.viewSteps = gameController.getFootsteps();//同理 -> gameController里的steps变量
-                        System.out.println("当前应显示步数为：" + viewSteps);
-                        this.stepLabel.setText("当前步数:" + viewSteps);
-                    }
-                    {//更新关卡标签
-                        this.viewlevel = gameController.getLevel();//同理 -> gameController里的level变量
-                        System.out.println("当前应显示关卡为：" + viewlevel);
-                        this.levelLable.setText("当前关卡：" + viewlevel);
-                    }
-                }
+                updateLables();
             }
             //fjm
 
@@ -189,21 +172,7 @@ public class ChessGameFrame extends JFrame {
             //已解决：case1是下落，case2是补充新棋子，现在有一个问题，如果我在交换前先点击一次nextstep，那么就进入case2，则交换后再点击nextstep则不会下落，直接生成新棋子了
             //解决方法：在gameController下的交换方法中进行补充，使得每次交换后nextstep都必须为1，具体可以到gameController下的那个方法去看
             chessboardComponent.nextStep();
-            {//更新分数标签
-                this.viewScores=gameController.getScore();//从gameController里直接获得游戏分数 -> gameController里的score变量
-                System.out.println("当前应显示分数为："+viewScores);
-                this.scoreLabel.setText("当前分数:"+viewScores);//将取到的游戏分数修改到Label上
-            }
-            {//更新步数标签
-                this.viewSteps=gameController.getFootsteps();//同理 -> gameController里的steps变量
-                System.out.println("当前应显示步数为："+viewSteps);
-                this.stepLabel.setText("当前步数:"+viewSteps);
-            }
-            {//更新关卡标签
-                this.viewlevel=gameController.getLevel();//同理 -> gameController里的level变量
-                System.out.println("当前应显示关卡为："+viewlevel);
-                this.levelLable.setText("当前关卡："+viewlevel);
-            }
+            updateLables();
         });//fjm
         button.setLocation(HEIGTH, HEIGTH / 10 + 280);
         button.setSize(200, 60);
@@ -239,5 +208,22 @@ public class ChessGameFrame extends JFrame {
             gameController.saveGameToFile(path);
         });
     }//冯俊铭 23/12/10/21：29
+    public void updateLables(){
+        {//更新分数标签
+            this.viewScores=gameController.getScore();//从gameController里直接获得游戏分数 -> gameController里的score变量
+            System.out.println("当前应显示分数为："+viewScores);
+            this.scoreLabel.setText("当前分数:"+viewScores);//将取到的游戏分数修改到Label上
+        }
+        {//更新步数标签
+            this.viewSteps=gameController.getFootsteps();//同理 -> gameController里的steps变量
+            System.out.println("当前应显示步数为："+viewSteps);
+            this.stepLabel.setText("当前步数:"+viewSteps);
+        }
+        {//更新关卡标签
+            this.viewlevel=gameController.getLevel();//同理 -> gameController里的level变量
+            System.out.println("当前应显示关卡为："+viewlevel);
+            this.levelLable.setText("当前关卡："+viewlevel);
+        }
+    }
 
 }

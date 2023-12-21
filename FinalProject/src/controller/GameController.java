@@ -34,6 +34,14 @@ public class GameController implements GameListener {
         return name;
     }
 
+    public int getMode() {
+        return mode;
+    }
+
+    public void setMode(int mode) {
+        this.mode = mode;
+    }
+
     public void setName(String name) {
         this.name = name;
     }
@@ -42,7 +50,7 @@ public class GameController implements GameListener {
     private int steps = 0;
     int minscore;
     private String name = "新游戏";
-
+    private int mode = 1;//游戏模式，1是手动模式、2是自动模式
     public Chessboard getModel() {
         return model;
     }
@@ -338,6 +346,11 @@ public class GameController implements GameListener {
         for (String line : saveLines) {
             System.out.println(line);
         }
+        saveLines.add("当前存档名:"+name);
+        saveLines.add("当前关卡:"+level);
+        saveLines.add("当前步数:"+steps);
+        saveLines.add("当前分数:"+score);
+        saveLines.add("当前模式:"+mode);
         try {
             Files.write(Path.of(path), saveLines);//写文件
         } catch (IOException e) {
@@ -355,6 +368,8 @@ public class GameController implements GameListener {
         for (String line : readLines) {
             System.out.println(line);
         }
+
+        //先将棋盘读入
         if (model.readListToBoard(readLines) == 100) {
             //readListToBoard方法执行成功会返回100，才能进行读取到游戏界面上的操作
             //读入转换好的数组（一个位置存储着棋盘一行的内容）
@@ -367,8 +382,37 @@ public class GameController implements GameListener {
             }
             //然后再用下面这个方法重新载入model
             view.initiateChessComponent(model);
-            // TODO: 2023/12/10 好像要先消除再重设initiateChessComponent？？？
-            return 100;//100表示导入成功
+            //读取readLines最后一行，存的是模式（这个必须单独读取）
+            String[] modeinfo = readLines.get(readLines.size()-1).split(":");
+            mode = Integer.parseInt(modeinfo[1]);
+            //再读入游戏的其他参数
+            for (int i = Constant.CHESSBOARD_ROW_SIZE.getNum(); i < readLines.size() - 1; i++) {
+                String[] info = readLines.get(i).split(":");
+                switch (info[0]) {
+                    case "当前存档名" -> {
+                        name = info[1];
+                        System.out.println("导入成功，当前存档名" + name);
+                    }
+                    case "当前关卡" -> {
+                        level = Integer.parseInt(info[1]);
+                        System.out.println("导入成功，当前关卡" + level);
+                    }
+                    case "当前步数" -> {
+                        steps = Integer.parseInt(info[1]);
+                        System.out.println("导入成功，当前步数" + steps);
+                    }
+                    case "当前分数" -> {
+                        score = Integer.parseInt(info[1]);
+                        System.out.println("导入成功，当前分数" + score);
+                    }
+                }
+            }
+            if (mode==1){
+                return 1001;//1001表示导入成功，模式为手动模式
+            }else if (mode==2){
+                return 1002;//1002表示导入成功，模式为自动模式
+            }else return 1003;//1003表示棋盘导入成功，但模式违法
+
         } else if (model.readListToBoard(readLines) == 102) {
             System.out.println("102导入错误");
             return 102;

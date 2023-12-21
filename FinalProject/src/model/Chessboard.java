@@ -728,13 +728,13 @@ public class Chessboard {
             }
         }
 
-        if (readLines.size()==Constant.CHESSBOARD_ROW_SIZE.getNum()){
+        if (readLines.size()-5==Constant.CHESSBOARD_ROW_SIZE.getNum()){
+            //记得保存的参数如果多一行，这里-5必须也要改！！！
             //读入的readLines的大小必须与棋盘行数匹配（readLines里一个位置存着棋盘里一行的数据）才能进行下一步逐行读入
             for (int i = 0; i < Constant.CHESSBOARD_ROW_SIZE.getNum(); i++){
                 sb.setLength(0);//遍历每一行前先清空StringBuilder
                 //readLines数组中，每一个位置存储着一行棋盘的数据
                 String[] readline = readLines.get(i).split(","); //遍历每行时，先将其提取并分割出来
-
                 if (readline.length==Constant.CHESSBOARD_COL_SIZE.getNum()){
                     //同样，分割后readline里的长度如果与当前棋盘列数匹配才能读入
                     for (int j = 0; j < Constant.CHESSBOARD_COL_SIZE.getNum(); j++){

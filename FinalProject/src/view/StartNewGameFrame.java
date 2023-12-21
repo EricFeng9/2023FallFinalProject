@@ -16,7 +16,7 @@ public class StartNewGameFrame extends JFrame {
     ChessGameFrame mainFrame;
     Chessboard chessboard;
     String gamename;
-
+    Choice modechoice;
 
     public GameController getGameController() {
         return gameController;
@@ -64,7 +64,8 @@ public class StartNewGameFrame extends JFrame {
         addmodeLabel();
         addCheckBox1();
         addCheckBox2();
-        addchoice();
+        this.modechoice = addmodechoice();
+        add(modechoice);
         this.setResizable(false);//冯俊铭 设置窗口不能改变大小
         this.gameController = gameController;
         this.chessboard = gameController.getModel();
@@ -77,9 +78,11 @@ public class StartNewGameFrame extends JFrame {
         startButton.setLocation(77,280);
         startButton.setSize(146,46);
         startButton.addActionListener(e -> {
+            //初始化model棋盘
             while (chessboard.ismatch()){
                gameController.onPlayerInitiateNextStep();
             }
+            //先把gameController中的view取出来（无所谓这个view长什么样）
             ChessboardComponent view = gameController.getView();
             //先遍历棋盘 删除掉view中各个Point点的Grid
             for (int i = 0; i < Constant.CHESSBOARD_ROW_SIZE.getNum(); i++) {
@@ -88,17 +91,33 @@ public class StartNewGameFrame extends JFrame {
                     view.removeChessComponentAtGrid(point);
                 }
             }
+            //再根据初始化好的model棋盘重新生成view
             view.initiateChessComponent(gameController.getModel());
+            //再将view传回gameController
             gameController.setView(view);
+            //初始化参数、导入棋盘和控制器
             gameController.setScore(0);
             gameController.setSteps(0);
             gameController.setLevel(1);
             gameController.setName(gamename);//设置存档名
             mainFrame.setGameController(gameController);
-            System.out.println("——————游戏初始化完毕——————");//试输出存档名
-            System.out.println("当前游戏存档名为："+gamename);//试输出存档名
-            mainFrame.setVisible(true);
-            this.setVisible(false);
+            mainFrame.setTitle(gamename+"的游戏");
+
+            if (modechoice.getSelectedItem().equals("手动模式") && gamename!=null){
+                gameController.setMode(1);//手动模式为模式1
+                System.out.println("——————游戏初始化完毕——————");//试输出存档名
+                System.out.println("当前游戏存档名为："+gamename);//试输出存档名
+                mainFrame.setVisible(true);
+                this.setVisible(false);
+            }else if(modechoice.getSelectedItem().equals("自动模式")&& gamename!=null){
+                gameController.setMode(2);//自动模式为模式2
+                // TODO: 2023/12/21 打开自动模式的窗口
+            } else if (gamename==null) {
+                JOptionPane.showMessageDialog(this,"还没有输入存档名","还不能开始噢",JOptionPane.WARNING_MESSAGE);
+            } else{
+                JOptionPane.showMessageDialog(this,"还未选择模式","还不能开始噢",JOptionPane.WARNING_MESSAGE);
+            }
+
         });
         this.add(startButton);
         startButton.setVisible(true);
@@ -152,18 +171,17 @@ public class StartNewGameFrame extends JFrame {
         this.add(startLabel);
         startLabel.setVisible(true);
     }
-    private void addchoice(){
+    private Choice addmodechoice(){
         Choice choice = new Choice();
         Font font =new Font("雅黑",Font.PLAIN,15);
-        choice.add("简单模式");
-        choice.add("普通模式");
-        choice.add("困难模式");
+        choice.add("手动模式");
+        choice.add("自动模式");
         choice.setFont(font);
         choice.setName("请选择你的模式");
         choice.setLocation(110,120);
         choice.setSize(170,15);
-        this.add(choice);
         choice.setVisible(true);
+        return choice;
     }
 
     private void addCheckBox1(){
