@@ -738,11 +738,22 @@ public class Chessboard {
                 if (readline.length==Constant.CHESSBOARD_COL_SIZE.getNum()){
                     //同样，分割后readline里的长度如果与当前棋盘列数匹配才能读入
                     for (int j = 0; j < Constant.CHESSBOARD_COL_SIZE.getNum(); j++){
-                        if (!(readline[j].equals("💎")||readline[j].equals("⚪")||readline[j].equals("▲")||readline[j].equals("🔶"))){
+                        if (!(readline[j].equals("💎")||readline[j].equals("⚪")||readline[j].equals("▲")||readline[j].equals("🔶")||readline[j].equals("0"))){
+                            //如果发现不匹配，则将棋盘改回原来的样子
+                            for (int k = 0; k < Constant.CHESSBOARD_ROW_SIZE.getNum(); k++){
+                                for (int l = 0; l < Constant.CHESSBOARD_COL_SIZE.getNum(); l++){
+                                    ChessPiece piece =originGrid[k][l].getPiece();
+                                    grid[k][l].setPiece(piece);
+                                }
+                            }
                             return 103;
                         }
-                        ChessPiece piece = new ChessPiece(readline[j]);
-                        grid[i][j].setPiece(piece);//将棋盘中对应位置的piece放进去
+                        if (!readline[j].equals("0")){
+                            ChessPiece piece = new ChessPiece(readline[j]);
+                            grid[i][j].setPiece(piece);//将棋盘中对应位置的piece放进去
+                        }else{
+                            grid[i][j].removePiece();//读到“0”表示那个位置为空，则将那个位置的grid删去
+                        }
                     }
                 }else {
                     //如果发现不匹配，则将棋盘改回原来的样子
