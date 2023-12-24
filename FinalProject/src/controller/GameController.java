@@ -89,7 +89,7 @@ public class GameController implements GameListener {
         this.model = model;
         //!!注意理解 这里是调用而非生成新的
         view.registerController(this);
-        //使
+        //使view可以调用gameController
         registerMainFrame(mainFrame);
         initialize();
         view.initiateChessComponent(model);

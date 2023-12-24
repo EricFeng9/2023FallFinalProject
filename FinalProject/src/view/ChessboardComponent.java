@@ -7,6 +7,7 @@ import model.*;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseEvent;
+import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -48,13 +49,15 @@ public class ChessboardComponent extends JComponent {
      * This method represents how to initiate ChessComponent
      * according to Chessboard information
      */
-    public void initiateChessComponent(Chessboard chessboard) {
+    public void initiateChessComponent(Chessboard chessboard){
         Cell[][] grid = chessboard.getGrid();
         for (int i = 0; i < CHESSBOARD_ROW_SIZE.getNum(); i++) {
             for (int j = 0; j < CHESSBOARD_COL_SIZE.getNum(); j++) {
                 if (grid[i][j].getPiece() != null) {
                     ChessPiece chessPiece = grid[i][j].getPiece();
-                    gridComponents[i][j].add(new ChessComponent(CHESS_SIZE, chessPiece));
+                    ChessComponent chessComponent = null;
+                        chessComponent = new ChessComponent(CHESS_SIZE, chessPiece);
+                    gridComponents[i][j].add(chessComponent);
                 }
             }
         }

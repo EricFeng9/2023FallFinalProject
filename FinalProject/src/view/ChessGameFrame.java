@@ -31,10 +31,14 @@ public class ChessGameFrame extends JFrame {
     private JButton nextStepButton;//fjm
     private JButton swapButton;//fjm
     private JButton modeTransferButton;//fjm
+    private JLabel background;//fjm
+    private JLabel settingButton;//fjm
+    private SettingFrame settingFrame;//冯俊铭
+
     public ChessGameFrame(int width, int height) {
         setTitle("2023 CS109 Project Demo"); //设置标题
-        this.WIDTH = width;
-        this.HEIGTH = height;
+        this.WIDTH = width;//1100
+        this.HEIGTH = height;//810
         this.ONE_CHESS_SIZE = (HEIGTH * 4 / 5) / 9;
 
         setSize(WIDTH, HEIGTH);
@@ -57,7 +61,11 @@ public class ChessGameFrame extends JFrame {
         add(modeTransferButton);
         addChessboard();
         addHelloButton();
-        addSaveButton();//冯俊铭
+        //addSaveButton();//冯俊铭
+        this.settingButton = addSettingsButton();
+        add(settingButton);
+        this.background=addBackgroundLabel();
+        add(background);
         this.setResizable(false);//冯俊铭 设置窗口不能改变大小
     }
     public void getGameControllerToLoadViewMode(GameController gameController) {
@@ -129,7 +137,7 @@ public class ChessGameFrame extends JFrame {
      */
 
     private void addHelloButton() {
-        JButton button = new JButton("Show Hello Here");
+        JButton button = new JButton(" ");
         button.addActionListener((e) -> {
             chessboardComponent.getGameController().onPlayerSwapChess();
         });
@@ -227,7 +235,8 @@ public class ChessGameFrame extends JFrame {
             gameController.loadGameFromFile(path);
         });
     }//冯俊铭 23/12/10/22:56*/
-    private void addSaveButton() {
+
+    /*protected JButton addSaveButton() {
         JButton button = new JButton("Save");
         button.setLocation(HEIGTH, HEIGTH / 10 + 360);
         button.setSize(200, 60);
@@ -249,7 +258,72 @@ public class ChessGameFrame extends JFrame {
             }
 
         });
-    }//冯俊铭 23/12/10/21：29
+        return button;
+    }//冯俊铭 23/12/10/21：29*/
+    protected void Saving(){
+        if (!gameController.isIronMode){
+            //如果不是铁人游戏，则可以保存
+            System.out.println("Click save");
+            FileDialog fileDialog = new FileDialog(this,"选择你要保存的路径",FileDialog.SAVE);
+            fileDialog.setVisible(true);
+            String path = fileDialog.getDirectory()+fileDialog.getFile()+".txt";
+            chessboardComponent.getGameController().saveGameToFile(path);
+        }if (gameController.isIronMode){
+            //如果是铁人游戏，则跳出弹窗提示不能保存
+            System.out.println("这是铁人模式，不允许存档");
+            JOptionPane.showMessageDialog(this,"这是铁人模式，不能存档！","不能存档！",JOptionPane.WARNING_MESSAGE);
+        }
+    }//冯俊铭 把save方法整理到这里，这样每个按钮就只用调用这一个方法
+
+    protected void Load() {
+        System.out.println("Click load");
+        FileDialog fileDialog = new FileDialog(this, "选择你的存档", FileDialog.LOAD);
+        fileDialog.setVisible(true);
+        String path = fileDialog.getDirectory() + fileDialog.getFile();
+        String savingname = fileDialog.getFile();//获取读到的文件名
+        System.out.println("用户选中了:" + path);
+        System.out.println("用户选中了:" + savingname);
+        String[] cutname = savingname.split("\\.");//根据.把文件名分开，拿到后缀名
+        String nameExtension = cutname[cutname.length - 1];//最后一个部分就是.txt后缀名
+        if (!nameExtension.equals("txt")) {
+            JOptionPane.showMessageDialog(this, "错误：存档文件格式应该为txt文本", "错误101:载入错误", JOptionPane.WARNING_MESSAGE);
+        } else {
+            int returnError = gameController.loadGameFromFile(path);//执行文件载入方法并且得到个返回值
+            if (returnError == 1001) {
+                //1001表示导入成功且为手动模式
+                getGameControllerToLoadViewMode(gameController);
+                System.out.println("——————游戏导入化完毕——————");
+                System.out.println("当前游戏存档名为：" + gameController.getName());//试输出存档名
+                System.out.println("当前游戏模式为：" + getViewMode());//试输出模式
+                //更新标签
+                updateLables();
+                setVisible(true);
+            }
+            if (returnError == 1002) {
+                //1002表示导入成功且为自动模式
+                getGameControllerToLoadViewMode(gameController);
+                System.out.println("——————游戏导入化完毕——————");
+                System.out.println("当前游戏存档名为：" + gameController.getName());//试输出存档名
+                System.out.println("当前游戏模式为：" + getViewMode());//试输出模式
+                //更新标签
+                updateLables();
+                setVisible(true);
+                //更新标签
+                    /*mainFrame.updateLables();
+                    mainFrame.setVisible(true);
+                    this.setVisible(false);*/
+            } else if (returnError == 102) {
+                JOptionPane.showMessageDialog(this, "错误：载入存档不符合棋盘规则", "错误102:载入错误", JOptionPane.WARNING_MESSAGE);
+                //如果加载不成功 就弹出报错框
+            } else if (returnError == 103) {
+                JOptionPane.showMessageDialog(this, "错误：载入存档中存在违规棋子", "错误103:载入错误", JOptionPane.WARNING_MESSAGE);
+                //如果加载不成功 就弹出报错框
+            } else if (returnError == 104) {
+                JOptionPane.showMessageDialog(this, "错误：未预料的错误，请联系开发者处理", "错误104:载入错误", JOptionPane.WARNING_MESSAGE);
+                //如果加载不成功 就弹出报错框
+            }
+        }
+    }//fjm 把load方法整理到这里，这样每个按钮就只用调用这一个方法
     private JButton addModeTransferButton(){
         JButton button = new JButton("模式转换");
         button.setLocation(HEIGTH, HEIGTH / 10 + 440);
@@ -288,4 +362,48 @@ public class ChessGameFrame extends JFrame {
     public void registerGameController(GameController gameController){
         this.gameController = gameController;
     }//fjm 注册gameController方便调用里面的方法
+    private JLabel addBackgroundLabel(){
+        JLabel backgroundLabel = new JLabel(new ImageIcon("./icons/chessGameFrame.png"));
+        backgroundLabel.setSize(1090,800);
+        backgroundLabel.setLocation(0,0);
+        return backgroundLabel;
+    }//fjm 设置背景图
+    private JLabel addSettingsButton(){
+        JLabel label = new JLabel();
+        label.setIcon(new ImageIcon("./icons/settingButton.png"));
+        label.setSize(40,40);
+        label.setLocation(5,5);
+        label.addMouseListener(new MouseListener() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                System.out.println("鼠标已点击设置!");
+                settingFrame.setVisible(true);
+            }
+
+            @Override
+            public void mousePressed(MouseEvent e) {
+                label.setIcon(new ImageIcon("./icons/settingButton_press.png"));
+            }
+
+            @Override
+            public void mouseReleased(MouseEvent e) {
+                label.setIcon(new ImageIcon("./icons/settingButton.png"));
+            }
+
+            @Override
+            public void mouseEntered(MouseEvent e) {
+
+            }
+
+            @Override
+            public void mouseExited(MouseEvent e) {
+
+            }
+        });
+        return label;
+    }//冯俊铭 用JLabel添加设置按钮
+
+    public void registerSettingFrame(SettingFrame settingFrame){
+        this.settingFrame = settingFrame;
+    }//冯俊铭 给主窗口绑定设置窗口
 }
