@@ -61,6 +61,7 @@ public class ChessGameFrame extends JFrame {
         add(modeTransferButton);
         addChessboard();
         addHelloButton();
+        addHelloButton2();
         //addSaveButton();//冯俊铭
         this.settingButton = addSettingsButton();
         add(settingButton);
@@ -137,12 +138,24 @@ public class ChessGameFrame extends JFrame {
      */
 
     private void addHelloButton() {
-        JButton button = new JButton(" ");
+        JButton button = new JButton(" ");//设置显示在按钮上的文字
         button.addActionListener((e) -> {
-            chessboardComponent.getGameController().onPlayerSwapChess();
+            //点击监听器 鼠标点击后执行的代码
+            gameController.removeRow();
         });
-        button.setLocation(HEIGTH, HEIGTH / 10 + 120);
-        button.setSize(200, 60);
+        button.setLocation(15, 120);
+        button.setSize(100, 50);
+        button.setFont(new Font("Rockwell", Font.BOLD, 20));
+        add(button);
+    }
+    private void addHelloButton2() {
+        JButton button = new JButton(" ");//设置显示在按钮上的文字
+        button.addActionListener((e) -> {
+            //点击监听器 鼠标点击后执行的代码
+            gameController.removeRow();
+        });
+        button.setLocation(15, 120+190);
+        button.setSize(100, 50);
         button.setFont(new Font("Rockwell", Font.BOLD, 20));
         add(button);
     }
@@ -357,6 +370,7 @@ public class ChessGameFrame extends JFrame {
             this.viewlevel=chessboardComponent.getGameController().getLevel();//同理 -> gameController里的level变量
             System.out.println("当前应显示关卡为："+viewlevel);
             this.levelLable.setText("当前关卡："+viewlevel);
+
         }
     }
     public void registerGameController(GameController gameController){

@@ -160,6 +160,7 @@ public class ChessboardComponent extends JComponent {
             } else {
                 System.out.print("One chess here and ");
                 gameController.onPlayerClickChessPiece(getChessboardPoint(e.getPoint()), (ChessComponent) clickedComponent.getComponents()[0]);
+                //System.out.println(gameController.getSelectedPoint());
             }
             //冯俊铭 每点击一次格子，让gameController执行自动化方法
             gameController.Auto();

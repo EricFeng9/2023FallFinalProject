@@ -27,10 +27,11 @@ public class GameController implements GameListener {
     int showsteps;
     private Chessboard model;
     private ChessboardComponent view;
+
     private ChessGameFrame mainFrame;
 
     // Record whether there is a selected piece before
-    private ChessboardPoint selectedPoint;
+    private ChessboardPoint selectedPoint;//每一次点击的位置
     private ChessboardPoint selectedPoint2;
 
     public Boolean isIronMode=false;//fjm 用来判断是不是铁人模式
@@ -524,4 +525,14 @@ public class GameController implements GameListener {
 
         }
     }//冯俊铭
+
+    public ChessboardPoint getSelectedPoint() {
+        return selectedPoint;
+    }
+    public void removeRow(){
+        int row1 = selectedPoint.getRow();
+        int col1 = selectedPoint.getCol();
+        //拿到已经点击的点的行和列
+        System.out.println("点击了按钮");
+    }
 }
