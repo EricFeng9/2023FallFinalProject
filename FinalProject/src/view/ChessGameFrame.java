@@ -152,7 +152,7 @@ public class ChessGameFrame extends JFrame {
         JButton button = new JButton(" ");//设置显示在按钮上的文字
         button.addActionListener((e) -> {
             //点击监听器 鼠标点击后执行的代码
-            gameController.removeRow();
+            gameController.remove2();
         });
         button.setLocation(15, 120+190);
         button.setSize(100, 50);

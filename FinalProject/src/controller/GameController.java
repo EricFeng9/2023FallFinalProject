@@ -34,7 +34,8 @@ public class GameController implements GameListener {
     private ChessboardPoint selectedPoint;//每一次点击的位置
     private ChessboardPoint selectedPoint2;
 
-    public Boolean isIronMode=false;//fjm 用来判断是不是铁人模式
+    public Boolean isIronMode = false;//fjm 用来判断是不是铁人模式
+
     public String getName() {
         return name;
     }
@@ -56,6 +57,7 @@ public class GameController implements GameListener {
     int minscore;
     private String name = "新游戏";
     private int mode = 1;//游戏模式，1是手动模式、2是自动模式
+
     public Chessboard getModel() {
         return model;
     }
@@ -85,7 +87,7 @@ public class GameController implements GameListener {
         this.steps = steps;
     }
 
-    public GameController(ChessboardComponent view, Chessboard model,ChessGameFrame mainFrame) {
+    public GameController(ChessboardComponent view, Chessboard model, ChessGameFrame mainFrame) {
         this.view = view;
         this.model = model;
         //!!注意理解 这里是调用而非生成新的
@@ -96,9 +98,11 @@ public class GameController implements GameListener {
         view.initiateChessComponent(model);
         view.repaint();
     }
-    private void registerMainFrame(ChessGameFrame mainFrame){
+
+    private void registerMainFrame(ChessGameFrame mainFrame) {
         this.mainFrame = mainFrame;
     }//冯俊铭 23/12/21 使GameController也可以调用mainFrame相关的方法
+
     private void initialize() {
         for (int i = 0; i < Constant.CHESSBOARD_ROW_SIZE.getNum(); i++) {
             for (int j = 0; j < Constant.CHESSBOARD_COL_SIZE.getNum(); j++) {
@@ -151,7 +155,7 @@ public class GameController implements GameListener {
                 //swapdelete = false;
                 System.out.println("成功执行了交换");
                 isnextlevel();//冯俊铭 判断是否进入下一关！！之前没加这个所以换不了关
-                nextstep =1;//fjm !!一旦交换，则将nextstep必须改成1 避免交换后nextstep执行case2方法导致棋子不下落而直接生成新的
+                nextstep = 1;//fjm !!一旦交换，则将nextstep必须改成1 避免交换后nextstep执行case2方法导致棋子不下落而直接生成新的
                 return 100;//返回100表示交换且消除成功
             } else return 101;//返回101表示交换失败
         } else if (model.ismatch()) {
@@ -171,7 +175,7 @@ public class GameController implements GameListener {
             //消除完毕
             view.repaint();//冯俊铭 !!交换后执行repaint()重绘该组件 避免摇一摇更新
             System.out.println("交换未执行，消除了棋盘上还可以消除的棋子");
-            nextstep =1;//fjm !!一旦交换，则将nextstep必须改成1 避免交换后nextstep执行case2方法导致棋子不下落而直接生成新的
+            nextstep = 1;//fjm !!一旦交换，则将nextstep必须改成1 避免交换后nextstep执行case2方法导致棋子不下落而直接生成新的
             return 103;//返回103表示没有交换，消除了棋盘上还能消除的棋子
         } else return 102;//返回102表示没有选择两个点，且棋盘上已经没有棋子可以消除了
 
@@ -208,7 +212,7 @@ public class GameController implements GameListener {
                 //先遍历棋盘 删除掉view中各个Point点的Grid
                 for (int i = 0; i < Constant.CHESSBOARD_ROW_SIZE.getNum(); i++) {
                     for (int j = 0; j < Constant.CHESSBOARD_COL_SIZE.getNum(); j++) {
-                        ChessboardPoint point = new ChessboardPoint(i,j);
+                        ChessboardPoint point = new ChessboardPoint(i, j);
 
                         view.removeChessComponentAtGrid(point);
                     }
@@ -224,7 +228,7 @@ public class GameController implements GameListener {
                 //先遍历棋盘 删除掉view中各个Point点的Grid
                 for (int i = 0; i < Constant.CHESSBOARD_ROW_SIZE.getNum(); i++) {
                     for (int j = 0; j < Constant.CHESSBOARD_COL_SIZE.getNum(); j++) {
-                        ChessboardPoint point = new ChessboardPoint(i,j);
+                        ChessboardPoint point = new ChessboardPoint(i, j);
 
                         view.removeChessComponentAtGrid(point);
                     }
@@ -236,7 +240,7 @@ public class GameController implements GameListener {
                 System.out.println("已经走的步数是" + steps);
                 //isnextlevel();//冯俊铭 不用传参数 score和steps就在GameController里面
                 //冯俊铭 12.20 把上面的注释掉了，判断是否进入下一关应该放在swap中
-                nextstep=1;
+                nextstep = 1;
                 System.out.println("刚刚点击的那下是case2");
                 break;
         }
@@ -244,15 +248,15 @@ public class GameController implements GameListener {
 
     public void onPlayerAutoNextStep() {
         // 这是游戏初始化的时候使用的nextstep方法
-        boolean grid2[][]=model.candelete();
-        Cell grid3[][]=model.getGrid();
-        for (int i = 0; i <Constant.CHESSBOARD_ROW_SIZE.getNum(); i++) {
-            for (int j = 0; j <Constant.CHESSBOARD_COL_SIZE.getNum(); j++) {
-                if (grid2[i][j]){
+        boolean grid2[][] = model.candelete();
+        Cell grid3[][] = model.getGrid();
+        for (int i = 0; i < Constant.CHESSBOARD_ROW_SIZE.getNum(); i++) {
+            for (int j = 0; j < Constant.CHESSBOARD_COL_SIZE.getNum(); j++) {
+                if (grid2[i][j]) {
                     //                ChessPiece chess=grid3[i][j].getPiece();
-                    ChessboardPoint point=new ChessboardPoint(i,j);
+                    ChessboardPoint point = new ChessboardPoint(i, j);
                     model.removeChessPiece(point);
-                    score=score+10;
+                    score = score + 10;
                 }
             }
         }
@@ -261,7 +265,7 @@ public class GameController implements GameListener {
         //先遍历棋盘 删除掉view中各个Point点的Grid
         for (int i = 0; i < Constant.CHESSBOARD_ROW_SIZE.getNum(); i++) {
             for (int j = 0; j < Constant.CHESSBOARD_COL_SIZE.getNum(); j++) {
-                ChessboardPoint point = new ChessboardPoint(i,j);
+                ChessboardPoint point = new ChessboardPoint(i, j);
                 view.removeChessComponentAtGrid(point);
             }
         }
@@ -269,8 +273,8 @@ public class GameController implements GameListener {
         //TODO:2023/12/12 上面棋子掉落下来
         // TODO: 2023/12/12 添加新棋子
         // TODO: 2023/12/12 view.initiateChessComponent(model);
-        System.out.println("现在的分数是："+score);
-        System.out.println("已经走的步数是"+steps);
+        System.out.println("现在的分数是：" + score);
+        System.out.println("已经走的步数是" + steps);
 
         isnextlevel();//冯俊铭 不用传参数 score和steps就在GameController里面
         System.out.println("Implement your next step here.");
@@ -356,11 +360,11 @@ public class GameController implements GameListener {
         for (String line : saveLines) {
             System.out.println(line);
         }
-        saveLines.add("当前存档名:"+name);
-        saveLines.add("当前关卡:"+level);
-        saveLines.add("当前步数:"+steps);
-        saveLines.add("当前分数:"+score);
-        saveLines.add("当前模式:"+mode);
+        saveLines.add("当前存档名:" + name);
+        saveLines.add("当前关卡:" + level);
+        saveLines.add("当前步数:" + steps);
+        saveLines.add("当前分数:" + score);
+        saveLines.add("当前模式:" + mode);
         try {
             Files.write(Path.of(path), saveLines);//写文件
         } catch (IOException e) {
@@ -393,7 +397,7 @@ public class GameController implements GameListener {
             //然后再用下面这个方法重新载入model
             view.initiateChessComponent(model);
             //读取readLines最后一行，存的是模式（这个必须单独读取）
-            String[] modeinfo = readLines.get(readLines.size()-1).split(":");
+            String[] modeinfo = readLines.get(readLines.size() - 1).split(":");
             mode = Integer.parseInt(modeinfo[1]);
             //再读入游戏的其他参数
             for (int i = Constant.CHESSBOARD_ROW_SIZE.getNum(); i < readLines.size() - 1; i++) {
@@ -417,11 +421,11 @@ public class GameController implements GameListener {
                     }
                 }
             }
-            if (mode==1){
+            if (mode == 1) {
                 return 1001;//1001表示导入成功，模式为手动模式
-            }else if (mode==2){
+            } else if (mode == 2) {
                 return 1002;//1002表示导入成功，模式为自动模式
-            }else return 1003;//1003表示棋盘导入成功，但模式违法
+            } else return 1003;//1003表示棋盘导入成功，但模式违法
 
         } else if (model.readListToBoard(readLines) == 102) {
             System.out.println("102导入错误");
@@ -509,13 +513,13 @@ public class GameController implements GameListener {
 
     public void Auto() {
         //这个自动方法只有在模式2才生效，模式1不生效 且 只有选中了两个格子才能生效
-        if (mode ==2 && selectedPoint!=null && selectedPoint2!=null){
+        if (mode == 2 && selectedPoint != null && selectedPoint2 != null) {
             System.out.println("调用了自动化方法");
             onPlayerSwapChess();//先执行交换消除
             onPlayerNextStep();//掉落
             onPlayerNextStep();//生成新的
             mainFrame.updateLables();//mainFrame更新标签
-            while (model.ismatch()){
+            while (model.ismatch()) {
                 //如果棋盘上还有可以消除的，则循环运行这三个方法
                 onPlayerSwapChess();//先执行交换消除
                 onPlayerNextStep();//掉落
@@ -529,10 +533,141 @@ public class GameController implements GameListener {
     public ChessboardPoint getSelectedPoint() {
         return selectedPoint;
     }
-    public void removeRow(){
-        int row1 = selectedPoint.getRow();
-        int col1 = selectedPoint.getCol();
-        //拿到已经点击的点的行和列
-        System.out.println("点击了按钮");
+
+    public void removeRow() {
+        if (selectedPoint != null) {
+            int row1 = selectedPoint.getRow();
+            int col1 = selectedPoint.getCol();
+            //拿到已经点击的点的行和列
+            for (int i = 0; i <= 7; i++) {
+                if (i != col1) {
+                    ChessboardPoint point = new ChessboardPoint(row1, i);
+                    model.removeChessPiece(point);
+                    view.removeChessComponentAtGrid(point);
+                    score = score + 10;
+                }
+            }
+            for (int i = 0; i <= 7; i++) {
+                ChessboardPoint point = new ChessboardPoint(i, col1);
+                model.removeChessPiece(point);
+                view.removeChessComponentAtGrid(point);
+                score = score + 10;
+            }
+            for (int i = 0; i < Constant.CHESSBOARD_ROW_SIZE.getNum(); i++) {
+                for (int j = 0; j < Constant.CHESSBOARD_COL_SIZE.getNum(); j++) {
+                    ChessboardPoint point = new ChessboardPoint(i, j);
+
+                    view.removeChessComponentAtGrid(point);
+                }
+            }
+            view.initiateChessComponent(model);
+            view.repaint();//交换后执行repaint()重绘该组件 避免摇一摇更新
+            System.out.println("点击了按钮");
+        }
+    }//江易明 2023.12.25
+
+    public void remove2() {
+        if (selectedPoint != null) {
+            int row1 = selectedPoint.getRow();
+            int col1 = selectedPoint.getCol();
+            if ((row1 >= 1 && row1 <= 6) && (col1 >= 1 && col1 <= 6)) {
+                for (int i = row1 - 1; i <= row1 + 1; i++) {
+                    for (int j = col1 - 1; j <= col1 + 1; j++) {
+                        ChessboardPoint point = new ChessboardPoint(i, j);
+                        model.removeChessPiece(point);
+                        view.removeChessComponentAtGrid(point);
+                        score = score + 10;
+                    }
+                }
+            }
+            if (row1 == 0 && col1 == 0) {
+                for (int i = 0; i <= 1; i++) {
+                    for (int j = 0; j <= 1; j++) {
+                        ChessboardPoint point = new ChessboardPoint(i, j);
+                        model.removeChessPiece(point);
+                        view.removeChessComponentAtGrid(point);
+                        score = score + 10;
+                    }
+                }
+            }//左上
+            if (row1 == 7 && col1 == 0) {
+                for (int i = 6; i <= 7; i++) {
+                    for (int j = 0; j <= 1; j++) {
+                        ChessboardPoint point = new ChessboardPoint(i, j);
+                        model.removeChessPiece(point);
+                        view.removeChessComponentAtGrid(point);
+                        score = score + 10;
+                    }
+                }
+            }//左下
+            if (row1 == 0 && col1 == 7) {
+                for (int i = 0; i <= 1; i++) {
+                    for (int j = 6; j <= 7; j++) {
+                        ChessboardPoint point = new ChessboardPoint(i, j);
+                        model.removeChessPiece(point);
+                        view.removeChessComponentAtGrid(point);
+                        score = score + 10;
+                    }
+                }
+            }//右上
+            if (row1 == 7 && col1 == 7) {
+                for (int i = 6; i <= 7; i++) {
+                    for (int j = 6; j <= 7; j++) {
+                        ChessboardPoint point = new ChessboardPoint(i, j);
+                        model.removeChessPiece(point);
+                        view.removeChessComponentAtGrid(point);
+                        score = score + 10;
+                    }
+                }
+            }//右下
+            if (col1 == 0 && (row1 >= 1 && row1 <= 6)) {
+                for (int i = row1 - 1; i <= row1 + 1; i++) {
+                    for (int j = 0; j <= 1; j++) {
+                        ChessboardPoint point = new ChessboardPoint(i, j);
+                        model.removeChessPiece(point);
+                        view.removeChessComponentAtGrid(point);
+                        score = score + 10;
+                    }
+                }
+            }//左侧
+            if (col1 == 7 && (row1 >= 1 && row1 <= 6)) {
+                for (int i = row1 - 1; i <= row1 + 1; i++) {
+                    for (int j = 6; j <= 7; j++) {
+                        ChessboardPoint point = new ChessboardPoint(i, j);
+                        model.removeChessPiece(point);
+                        view.removeChessComponentAtGrid(point);
+                        score = score + 10;
+                    }
+                }
+            }//右侧
+            if (row1 == 0 && (col1 >= 1 && col1 <= 6)) {
+                for (int i = 0; i <= 1; i++) {
+                    for (int j = col1 - 1; j <= col1 + 1; j++) {
+                        ChessboardPoint point = new ChessboardPoint(i, j);
+                        model.removeChessPiece(point);
+                        view.removeChessComponentAtGrid(point);
+                        score=score+10;
+                    }
+                }
+            }//上侧
+            if (row1 == 7 && (col1 >= 1 && col1 <= 6)) {
+                for (int i = 6; i <= 7; i++) {
+                    for (int j = col1 - 1; j <= col1 + 1; j++) {
+                        ChessboardPoint point = new ChessboardPoint(i, j);
+                        model.removeChessPiece(point);
+                        view.removeChessComponentAtGrid(point);
+                        score=score+10;
+                    }
+                }
+            }//下侧
+            for (int i = 0; i < Constant.CHESSBOARD_ROW_SIZE.getNum(); i++) {
+                for (int j = 0; j < Constant.CHESSBOARD_COL_SIZE.getNum(); j++) {
+                    ChessboardPoint point = new ChessboardPoint(i, j);
+                    view.removeChessComponentAtGrid(point);
+                }
+            }
+            view.initiateChessComponent(model);
+            view.repaint();
+        }
     }
 }
