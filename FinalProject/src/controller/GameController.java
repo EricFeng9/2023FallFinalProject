@@ -151,7 +151,7 @@ public class GameController implements GameListener {
                     }
                 }//消除完毕
                 view.repaint();//冯俊铭 !!交换后执行repaint()重绘该组件 避免摇一摇更新
-                ++steps;
+                steps++;
                 //swapdelete = false;
                 System.out.println("成功执行了交换");
                 isnextlevel();//冯俊铭 判断是否进入下一关！！之前没加这个所以换不了关
@@ -676,8 +676,8 @@ public class GameController implements GameListener {
 
 
 
-    public void superswap(){
-        if (selectedPoint!=null&&selectedPoint2!=null){
+    public int superswap(){
+        if (selectedPoint != null && selectedPoint2 != null && !model.ismatch()){
             model.swapChessPiece(selectedPoint,selectedPoint2);
             ChessComponent chess1 = view.removeChessComponentAtGrid(selectedPoint);
             ChessComponent chess2 = view.removeChessComponentAtGrid(selectedPoint2);
@@ -690,16 +690,112 @@ public class GameController implements GameListener {
             //重新设置selectedPoint为null
             selectedPoint = null;
             selectedPoint2 = null;
+            {//交换后执行消除
+                boolean grid2[][] = model.candelete();
+                Cell grid3[][] = model.getGrid();
+                for (int i = 0; i < Constant.CHESSBOARD_ROW_SIZE.getNum(); i++) {
+                    for (int j = 0; j < Constant.CHESSBOARD_COL_SIZE.getNum(); j++) {
+                        if (grid2[i][j]) {
+                            ChessboardPoint point = new ChessboardPoint(i, j);
+                            model.removeChessPiece(point);
+                            view.removeChessComponentAtGrid(point);
+                            score = score + 10;
+                        }
+                    }
+                }
+            }//消除完毕
+            view.repaint();//冯俊铭 !!交换后执行repaint()重绘该组件 避免摇一摇更新
+            steps++;
+            supersteps--;//！记得减掉超级步数
+            //swapdelete = false;
+            System.out.println("成功执行了交换");
+            isnextlevel();//冯俊铭 判断是否进入下一关！！之前没加这个所以换不了关
+            nextstep = 1;//fjm !!一旦交换，则将nextstep必须改成1 避免交换后nextstep执行case2方法导致棋子不下落而直接生成新的
+            view.repaint();
+            System.out.println("当前剩余超级交换步数："+supersteps);
+            return 100;//100表示交换成功
+        }else if(model.ismatch()){
+            //如果棋盘中还有能消除的棋子则先消除 这里可能会报错，但是无所谓，不影响
+            boolean grid2[][] = model.candelete();
+            Cell grid3[][] = model.getGrid();
             for (int i = 0; i < Constant.CHESSBOARD_ROW_SIZE.getNum(); i++) {
                 for (int j = 0; j < Constant.CHESSBOARD_COL_SIZE.getNum(); j++) {
-                    ChessboardPoint point = new ChessboardPoint(i, j);
-                    view.removeChessComponentAtGrid(point);
+                    if (grid2[i][j]) {
+                        ChessboardPoint point = new ChessboardPoint(i, j);
+                        model.removeChessPiece(point);
+                        view.removeChessComponentAtGrid(point);
+                        score = score + 10;
+                    }
                 }
             }
-            view.initiateChessComponent(model);
-            view.repaint();
-            supersteps--;
-            System.out.println("当前剩余超级交换步数："+supersteps);
-        }
+            //消除完毕
+            view.repaint();//冯俊铭 !!交换后执行repaint()重绘该组件 避免摇一摇更新
+            System.out.println("交换未执行，消除了棋盘上还可以消除的棋子");
+            nextstep = 1;//fjm !!一旦交换，则将nextstep必须改成1 避免交换后nextstep执行case2方法导致棋子不下落而直接生成新的
+            return 101;//101表示交换了未交换的棋子
+        }else return 102;//表示现在需要选择两个棋子交换
+
     }
+
+
+    public boolean isdeadend(){
+        boolean result=true;
+        /*String[][] stringsgrid=new String[Constant.CHESSBOARD_ROW_SIZE.getNum()+4][Constant.CHESSBOARD_COL_SIZE.getNum()+4];
+        for (int i = 2; i <=9 ; i++) {
+            for (int j = 2; j <=9 ; j++) {
+                stringsgrid[i][j]=model.getGrid()[i-2][j-2].getPiece().getName();
+            }
+        }
+        for (int i = 0; i < Constant.CHESSBOARD_ROW_SIZE.getNum()+4; i++) {
+            for (int j = 0; j < Constant.CHESSBOARD_COL_SIZE.getNum()+4; j++) {
+                if (stringsgrid[i][j]==null){
+                    stringsgrid[i][j]="0";
+                }
+            }
+        }*/
+        //分四个方向
+        //向右
+        for (int i = 0; i <8 ; i++) {
+            for (int j = 0; j <7 ; j++) {
+                ChessboardPoint point1=new ChessboardPoint(i,j);
+                ChessboardPoint point2=new ChessboardPoint(i,j+1);
+                if (model.canSwap(point1, point2)){
+                    result=false;
+                }
+            }
+        }
+        //向左
+        for (int i = 0; i <8 ; i++) {
+            for (int j =1; j <8 ; j++) {
+                ChessboardPoint point1=new ChessboardPoint(i,j);
+                ChessboardPoint point2=new ChessboardPoint(i,j-1);
+                if (model.canSwap(point1,point2)){
+                    result=false;
+                }
+            }
+        }
+        //向下
+        for (int i = 0; i <7 ; i++) {
+            for (int j = 0; j <8 ; j++) {
+                ChessboardPoint point1=new ChessboardPoint(i,j);
+                ChessboardPoint point2=new ChessboardPoint(i+1,j);
+                if (model.canSwap(point1,point2)){
+                    result=false;
+                }
+            }
+        }
+        //向上
+//        for (int i = 3; i <=9 ; i++) {
+//            for (int j = 2; j <=9; j++) {
+//                ChessboardPoint point1=new ChessboardPoint(i,j);
+//                ChessboardPoint point2=new ChessboardPoint(i-1,j);
+//                if (model.newcanswap(point1,point2)){
+//                    result=false;
+//                }
+//            }
+//        }
+        System.out.println(result);
+        return result;
+    }
+
 }

@@ -33,6 +33,7 @@ public class ChessGameFrame extends JFrame {
     private JButton modeTransferButton;//fjm
     private JLabel background;//fjm
     private JLabel settingButton;//fjm
+    private JLabel viewSuperSteps;//fjm
     private SettingFrame settingFrame;//冯俊铭
 
     public ChessGameFrame(int width, int height) {
@@ -50,9 +51,11 @@ public class ChessGameFrame extends JFrame {
         this.scoreLabel =loadScoreLabel();
         this.stepLabel=loadStepLabel();
         this.levelLable=loadLevelLabel();
+        this.viewSuperSteps=addViewSuperStepsLabel();
         add(levelLable);
         add(scoreLabel);
         add(stepLabel);
+        add(viewSuperSteps);
         this.nextStepButton =addNextStepButton();
         add(nextStepButton);
         this.swapButton = addSwapConfirmButton();
@@ -60,9 +63,10 @@ public class ChessGameFrame extends JFrame {
         this.modeTransferButton=addModeTransferButton();
         add(modeTransferButton);
         addChessboard();
-        addHelloButton();
+        addRemoveRowButton();
         addHelloButton2();
         addHelloButton3();
+        addTestButton();
         //addSaveButton();//冯俊铭
         this.settingButton = addSettingsButton();
         add(settingButton);
@@ -132,33 +136,95 @@ public class ChessGameFrame extends JFrame {
         levelLabel.setFont(font);
         return levelLabel;
     }
-
+    private JLabel addViewSuperStepsLabel(){
+        Font font = new Font("雅黑", Font.PLAIN, 20);
+        JLabel label = new JLabel();
+        try{
+            label.setText("当前剩余超级交换步数为："+gameController.supersteps);
+        }catch (Exception e){
+            label.setText("当前剩余超级交换步数为：0");
+        }
+        label.setLocation(HEIGTH, (HEIGTH / 10)+120);
+        label.setSize(400, 60);
+        label.setFont(font);
+        label.setForeground(Color.red);
+        label.setVisible(true);
+        return label;
+    }
 
     /**
      * 在游戏面板中增加一个按钮，如果按下的话就会显示Hello, world!
      */
 
-    private void addHelloButton() {
-        JButton button = new JButton(" ");//设置显示在按钮上的文字
-        button.addActionListener((e) -> {
-            //点击监听器 鼠标点击后执行的代码
-            gameController.removeRow();
+    private void addRemoveRowButton() {
+        JLabel label = new JLabel(" ");//设置显示在按钮上的文字
+        label.setIcon(new ImageIcon("./icons/removeRowButton.png"));
+        label.addMouseListener(new MouseListener() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                //点击监听器 鼠标点击后执行的代码
+                gameController.removeRow();
+            }
+
+            @Override
+            public void mousePressed(MouseEvent e) {
+                label.setIcon(new ImageIcon("./icons/removeRowButton_pressed.png"));
+            }
+
+            @Override
+            public void mouseReleased(MouseEvent e) {
+                label.setIcon(new ImageIcon("./icons/removeRowButton.png"));
+            }
+
+            @Override
+            public void mouseEntered(MouseEvent e) {
+
+            }
+
+            @Override
+            public void mouseExited(MouseEvent e) {
+
+            }
         });
-        button.setLocation(15, 120);
-        button.setSize(100, 50);
-        button.setFont(new Font("Rockwell", Font.BOLD, 20));
-        add(button);
+        label.setLocation(15, 120);
+        label.setSize(100, 100);
+        label.setFont(new Font("Rockwell", Font.BOLD, 20));
+        add(label);
     }
     private void addHelloButton2() {
-        JButton button = new JButton(" ");//设置显示在按钮上的文字
-        button.addActionListener((e) -> {
-            //点击监听器 鼠标点击后执行的代码
-            gameController.remove2();
+        JLabel label = new JLabel(" ");//设置显示在按钮上的文字
+        label.setIcon(new ImageIcon("./icons/remove33.png"));
+        label.addMouseListener(new MouseListener() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                //点击监听器 鼠标点击后执行的代码
+                gameController.removeRow();
+            }
+
+            @Override
+            public void mousePressed(MouseEvent e) {
+                label.setIcon(new ImageIcon("./icons/remove33_pressed.png"));
+            }
+
+            @Override
+            public void mouseReleased(MouseEvent e) {
+                label.setIcon(new ImageIcon("./icons/remove33.png"));
+            }
+
+            @Override
+            public void mouseEntered(MouseEvent e) {
+
+            }
+
+            @Override
+            public void mouseExited(MouseEvent e) {
+
+            }
         });
-        button.setLocation(15, 120+190);
-        button.setSize(100, 50);
-        button.setFont(new Font("Rockwell", Font.BOLD, 20));
-        add(button);
+        label.setLocation(15, 120+190);
+        label.setSize(100, 100);
+        label.setFont(new Font("Rockwell", Font.BOLD, 20));
+        add(label);
     }
 
     private void addHelloButton3() {
@@ -166,7 +232,8 @@ public class ChessGameFrame extends JFrame {
         button.addActionListener((e) -> {
             //点击后 将超级交换步数设置为3
             gameController.supersteps=3;
-
+            System.out.println("进入超级交换模式");
+            viewSuperSteps.setText("当前剩余超级交换步数为："+gameController.supersteps);
         });
         button.setLocation(15, 120+190+190);
         button.setSize(100, 50);
@@ -197,7 +264,16 @@ public class ChessGameFrame extends JFrame {
         button.addActionListener((e) -> {
             if (viewMode.equals("手动模式")) {
                 if (gameController.supersteps>0){
-                    gameController.superswap();
+                    //如果还有剩余的超级交换步数 则使用超级交换方法
+                    int n=gameController.superswap();
+                    if(n==100){
+                        System.out.println("使用了超级交换");
+                    } else if (n==101) {
+                        System.out.println("交换了未交换的棋子");
+                    } else if (n==102) {
+                        JOptionPane.showMessageDialog(this, "请选择两个格子进行交换", "棋盘上已经没有棋子可以消除了", JOptionPane.WARNING_MESSAGE);
+                    }
+                    updateLables();
                 }else {
                     int swapreturnvalue = 0;
                     swapreturnvalue = chessboardComponent.swapChess();
@@ -242,6 +318,18 @@ public class ChessGameFrame extends JFrame {
         button.setLocation(HEIGTH, HEIGTH / 10 + 280);
         button.setSize(200, 60);
         button.setFont(new Font("Rockwell", Font.BOLD, 20));
+        return button;
+    }//冯俊铭
+
+    private JButton addTestButton() {
+        JButton button = new JButton("Test");
+        button.addActionListener((e) -> {
+            gameController.isdeadend();
+        });//fjm
+        button.setLocation(HEIGTH, HEIGTH / 10 + 280+80);
+        button.setSize(200, 60);
+        button.setFont(new Font("Rockwell", Font.BOLD, 20));
+        add(button);
         return button;
     }//冯俊铭
 
@@ -378,6 +466,7 @@ public class ChessGameFrame extends JFrame {
         });
         return button;
     }//fjm
+
     public void updateLables(){
         {//更新分数标签
             this.viewScores=chessboardComponent.getGameController().getScore();//从gameController里直接获得游戏分数 -> gameController里的score变量
@@ -393,7 +482,10 @@ public class ChessGameFrame extends JFrame {
             this.viewlevel=chessboardComponent.getGameController().getLevel();//同理 -> gameController里的level变量
             System.out.println("当前应显示关卡为："+viewlevel);
             this.levelLable.setText("当前关卡："+viewlevel);
-
+        }
+        {//更新超级步数标签
+            this.viewSuperSteps.setText("当前剩余超级交换步数为："+gameController.supersteps);
+            System.out.println("当前应显示超级步数为："+gameController.supersteps);
         }
     }
     public void registerGameController(GameController gameController){
@@ -439,6 +531,8 @@ public class ChessGameFrame extends JFrame {
         });
         return label;
     }//冯俊铭 用JLabel添加设置按钮
+
+
 
     public void registerSettingFrame(SettingFrame settingFrame){
         this.settingFrame = settingFrame;

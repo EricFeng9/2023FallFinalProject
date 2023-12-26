@@ -92,8 +92,139 @@ public class Chessboard {
         setChessPiece(point1, p2);
         setChessPiece(point2, p1);
     }//交换棋子，加判断方法，能否交换。
+    public boolean canSwap(ChessboardPoint point1, ChessboardPoint point2){
+        boolean result=false;
+        if (calculateDistance(point1, point2) > 1) {
+            return false;
+        }else {
+            String[][] stringsgrid=new String[Constant.CHESSBOARD_ROW_SIZE.getNum()+4][Constant.CHESSBOARD_COL_SIZE.getNum()+4];
+            for (int i = 2; i <=9 ; i++) {
+                for (int j = 2; j <=9 ; j++) {
+                    stringsgrid[i][j]=grid[i-2][j-2].getPiece().getName();
+                }
+            }
+            int row1 = point1.getRow();
+            int col1 = point1.getCol();
+            int row2 = point2.getRow();
+            int col2 = point2.getCol();
+            int srow1=row1+2;
+            int scol1=col1+2;
+            int srow2=row2+2;
+            int scol2=col2+2;
+            String a1=stringsgrid[srow1][scol1];
+            String b1=stringsgrid[srow2][scol2];
+            //从四个方向开始判断吧
+            if (row1==row2){
+                if (col1<col2){
+                    if (b1.equals(stringsgrid[srow1][scol1-1])&&b1.equals(stringsgrid[srow1][scol1-2])){
+                        result=true;
+                    }//2向左寻找
+                    if (b1.equals(stringsgrid[srow1-1][scol1])&&b1.equals(stringsgrid[srow1-2][scol1])){
+                        result=true;
+                    }//2向上寻找
+                    if (b1.equals(stringsgrid[srow1+1][scol1])&&b1.equals(stringsgrid[srow1+2][scol1])){
+                        result=true;
+                    }//2向下寻找
+                    if (b1.equals(stringsgrid[srow1-1][scol1])&&b1.equals(stringsgrid[srow1+1][col1])){
+                        result=true;
+                    }//2向上下寻找
+                    if (a1.equals(stringsgrid[srow2][scol2+1])&&a1.equals(stringsgrid[srow2][scol2+2])){
+                        result=true;
+                    }//1向右寻找
+                    if (a1.equals(stringsgrid[srow2-1][scol2])&&a1.equals(stringsgrid[srow2-2][scol2])){
+                        result=true;
+                    }//1向上寻找
+                    if (a1.equals(stringsgrid[srow2+1][scol2])&&a1.equals(stringsgrid[srow2+2][scol2])){
+                        result=true;
+                    }//1向下寻找
+                    if (a1.equals(stringsgrid[srow2+1][scol2])&&a1.equals(stringsgrid[srow2-1][scol2])){
+                        result=true;
+                    }//1向上下寻找
+                }
 
-    public boolean canSwap(ChessboardPoint point1, ChessboardPoint point2) {
+                else {
+                    if (b1.equals(stringsgrid[srow1][scol1+1])&&b1.equals(stringsgrid[srow1][scol1+2])){
+                        result=true;
+                    }//2向右寻找
+                    if (b1.equals(stringsgrid[srow1-1][scol1])&&b1.equals(stringsgrid[srow1-2][scol1])){
+                        result=true;
+                    }//2向上寻找
+                    if (b1.equals(stringsgrid[srow1+1][scol1])&&b1.equals(stringsgrid[srow1+2][scol1])){
+                        result=true;
+                    }//2向下寻找
+                    if (b1.equals(stringsgrid[srow1-1][scol1])&&b1.equals(stringsgrid[srow1+1][col1])){
+                        result=true;
+                    }//2向上下寻找
+                    if (a1.equals(stringsgrid[srow2][scol2-1])&&a1.equals(stringsgrid[srow2][scol2-2])){
+                        result=true;
+                    }//1向左寻找
+                    if (a1.equals(stringsgrid[srow2-1][scol2])&&a1.equals(stringsgrid[srow2-2][scol2])){
+                        result=true;
+                    }//1向上寻找
+                    if (a1.equals(stringsgrid[srow2+1][scol2])&&a1.equals(stringsgrid[srow2+2][scol2])){
+                        result=true;
+                    }//1向下寻找
+                    if (a1.equals(stringsgrid[srow2+1][scol2])&&a1.equals(stringsgrid[srow2-1][scol2])){
+                        result=true;
+                    }//1向上下寻找
+                }
+            }if (col1==col2){
+                if (row1>row2){
+                    if (b1.equals(stringsgrid[srow1-1][scol1])&&b1.equals(stringsgrid[srow1-2][scol1])){
+                        result=true;
+                    }//2下往上找
+                    if (b1.equals(stringsgrid[srow1][scol1-1])&&b1.equals(stringsgrid[srow1][scol1-2])){
+                        result=true;
+                    }//2向左找
+                    if (b1.equals(stringsgrid[srow1][scol1+1])&&b1.equals(stringsgrid[srow1][scol1+2])){
+                        result=true;
+                    }//2向右找
+                    if (b1.equals(stringsgrid[srow1][scol1-1])&&b1.equals(stringsgrid[srow1][scol1+1])){
+                        result=true;
+                    }//2向左右找
+                    if (a1.equals(stringsgrid[srow2+1][scol2])&&a1.equals(stringsgrid[srow2+2][scol2])){
+                        result=true;
+                    }//1向下找
+                    if (a1.equals(stringsgrid[srow2][scol2-1])&&a1.equals(stringsgrid[srow2][scol2-2])){
+                        result=true;
+                    }//2向左找
+                    if (a1.equals(stringsgrid[srow2][scol2+1])&&a1.equals(stringsgrid[srow2][scol2+2])){
+                        result=true;
+                    }//2向右找
+                    if (a1.equals(stringsgrid[srow2][scol2-1])&&a1.equals(stringsgrid[srow2][scol2+1])){
+                        result=true;
+                    }
+                }else {
+                    if (a1.equals(stringsgrid[srow2-1][scol2])&&a1.equals(stringsgrid[srow2-2][scol2])){
+                        result=true;
+                    }//1下往上找
+                    if (b1.equals(stringsgrid[srow1][scol1-1])&&b1.equals(stringsgrid[srow1][scol1-2])){
+                        result=true;
+                    }//2向左找
+                    if (b1.equals(stringsgrid[srow1][scol1+1])&&b1.equals(stringsgrid[srow1][scol1+2])){
+                        result=true;
+                    }//2向右找
+                    if (b1.equals(stringsgrid[srow1][scol1-1])&&b1.equals(stringsgrid[srow1][scol1+1])){
+                        result=true;
+                    }//2向左右找
+                    if (b1.equals(stringsgrid[srow1+1][scol1])&&b1.equals(stringsgrid[srow1+2][scol1])){
+                        result=true;
+                    }//2向下找
+                    if (a1.equals(stringsgrid[srow2][scol2-1])&&a1.equals(stringsgrid[srow2][scol2-2])){
+                        result=true;
+                    }//1向左找
+                    if (a1.equals(stringsgrid[srow2][scol2+1])&&a1.equals(stringsgrid[srow2][scol2+2])){
+                        result=true;
+                    }//1向右找
+                    if (a1.equals(stringsgrid[srow2][scol2-1])&&a1.equals(stringsgrid[srow2][scol2+1])){
+                        result=true;
+                    }//1向左右找
+                }
+            }
+        }
+        return result;
+    }//jym 2023.12.25
+    /*public boolean canSwap(ChessboardPoint point1, ChessboardPoint point2) {
         boolean result=false;
         if (calculateDistance(point1, point2) > 1) {
             return false;
@@ -211,7 +342,7 @@ public class Chessboard {
             }
         }
         return result;
-    }//江易明 2023.12.11
+    }//江易明 2023.12.11*/
 
     public boolean[][] candelete() {
         boolean[][] grid1 = new boolean[Constant.CHESSBOARD_ROW_SIZE.getNum()][Constant.CHESSBOARD_COL_SIZE.getNum()];
