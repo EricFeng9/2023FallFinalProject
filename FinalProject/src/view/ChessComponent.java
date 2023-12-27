@@ -13,9 +13,8 @@ import java.io.IOException;
  * but this class only cares how to draw Chess on ChessboardComponent
  */
 public class ChessComponent extends JComponent {
-
+    private String skin = "default";
     private boolean selected;
-
     private ChessPiece chessPiece;
     Image image1;
     Image image2;
@@ -23,7 +22,8 @@ public class ChessComponent extends JComponent {
     Image image4;
 
     private static int n = 0; //统计对象创建的次数
-    public ChessComponent(int size, ChessPiece chessPiece) {
+    public ChessComponent(int size, ChessPiece chessPiece,String skin) {
+        this.skin = skin;
         this.selected = false;
         setSize(size/2, size/2);
         setLocation(0,0);
@@ -31,14 +31,13 @@ public class ChessComponent extends JComponent {
         this.chessPiece = chessPiece;
         readImage();
         //n++;
-        System.out.println(n);
-    }
+        //System.out.println(n);
+    }//冯俊铭 添加了一个skin
     public void readImage(){
-        //只有第一次创建对象的时候才读入图片
-        image1 = Toolkit.getDefaultToolkit().getImage("./icons/1.png");
-        image2 = Toolkit.getDefaultToolkit().getImage("./icons/2.png");
-        image3 = Toolkit.getDefaultToolkit().getImage("./icons/3.png");
-        image4 = Toolkit.getDefaultToolkit().getImage("./icons/4.png");
+        image1 = Toolkit.getDefaultToolkit().getImage("./icons/"+skin+"/1.png");
+        image2 = Toolkit.getDefaultToolkit().getImage("./icons/"+skin+"/2.png");
+        image3 = Toolkit.getDefaultToolkit().getImage("./icons/"+skin+"/3.png");
+        image4 = Toolkit.getDefaultToolkit().getImage("./icons/"+skin+"/4.png");
 
     }//fjm 读图
     public boolean isSelected() {
@@ -67,6 +66,8 @@ public class ChessComponent extends JComponent {
             case "💎" -> {
                 try {
                     g2.drawImage(image1, (getWidth() - image1.getWidth(imageObserver)) / 2, (getWidth() - image1.getWidth(imageObserver)) / 2, null);
+                    //g.setColor(Color.red);
+                    //g.drawOval(0, 0, getWidth(), getHeight());
                 } catch (Exception e) {
                     System.out.println("没有读取到图片");
                     g2.setFont(font);
@@ -117,5 +118,12 @@ public class ChessComponent extends JComponent {
             g.setColor(Color.gray);
             g.drawOval(0, 0, getWidth(), getHeight());
         }
+    }
+    public String getSkin() {
+        return skin;
+    }
+
+    public void setSkin(String skin) {
+        this.skin = skin;
     }
 }

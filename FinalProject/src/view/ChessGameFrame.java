@@ -8,6 +8,7 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.io.File;
 import java.io.FilenameFilter;
+import java.net.URL;
 
 /**
  * 这个类表示游戏过程中的整个游戏界面，是一切的载体
@@ -24,6 +25,12 @@ public class ChessGameFrame extends JFrame {
     private int viewScores = 0;//冯俊铭
     private int viewSteps =0;//冯俊铭 显示在主界面上的分数和步数
     private int viewlevel = 1;//冯俊铭 显示在主界面上的关卡
+    private int viewRemove33 = 0;//fjm 显示道具数目
+
+    private int viewRemoveRow = 0;//fjm 显示道具数目
+    private int viewRefreshAll = 0;//fjm 显示道具数目
+    private int viewSuperSwap = 0;//fjm 显示道具数目
+
     private String viewMode= "手动模式";//冯俊铭 显示在主界面的模式
     private JLabel scoreLabel;//fjm
     private JLabel stepLabel;//fjm
@@ -34,8 +41,16 @@ public class ChessGameFrame extends JFrame {
     private JLabel background;//fjm
     private JLabel settingButton;//fjm
     private JLabel viewSuperSteps;//fjm
+    private JLabel removeRowButton;//fjm
+    private JLabel remove33Button;//fjm
+    private JLabel refreshAllButton;//fjm
+    private JLabel superSwapButton;//fjm
+    private JLabel viewRemove33Label;//fjm
+    private JLabel viewRemoveRowLabel;//fjm
+    private JLabel viewRefreshAllLabel;//fjm
+    private JLabel viewSuperSwapLabel;//fjm
     private SettingFrame settingFrame;//冯俊铭
-
+    private String skin = "default";//fjm
     public ChessGameFrame(int width, int height) {
         setTitle("2023 CS109 Project Demo"); //设置标题
         this.WIDTH = width;//1100
@@ -56,6 +71,14 @@ public class ChessGameFrame extends JFrame {
         add(scoreLabel);
         add(stepLabel);
         add(viewSuperSteps);
+        this.viewRemoveRowLabel=addViewRemoveRowLabel();
+        this.viewRefreshAllLabel=addViewRefreshAllLabel();
+        this.viewRemove33Label = addViewRemove33Label();
+        this.viewSuperSwapLabel = addViewSuperSwapLabel();
+        add(viewRemoveRowLabel);
+        add(viewRemove33Label);
+        add(viewSuperSwapLabel);
+        add(viewRefreshAllLabel);
         this.nextStepButton =addNextStepButton();
         add(nextStepButton);
         this.swapButton = addSwapConfirmButton();
@@ -63,9 +86,15 @@ public class ChessGameFrame extends JFrame {
         this.modeTransferButton=addModeTransferButton();
         add(modeTransferButton);
         addChessboard();
-        addRemoveRowButton();
-        addHelloButton2();
-        addHelloButton3();
+        this.removeRowButton = addRemoveRowButton();
+        add(removeRowButton);
+        this.remove33Button =addRemove33Button();
+        add(remove33Button);
+        this.refreshAllButton = addRefreshALlButton();
+        add(refreshAllButton);
+        this.superSwapButton = addSuperSwapButton();
+        add(superSwapButton);
+        addRefreshALlButton();
         addTestButton();
         //addSaveButton();//冯俊铭
         this.settingButton = addSettingsButton();
@@ -113,7 +142,7 @@ public class ChessGameFrame extends JFrame {
      * 在游戏面板中添加标签
      */
     private JLabel loadScoreLabel() {
-        Font font = new Font("雅黑", Font.PLAIN, 20);
+        Font font = new Font("雅黑", Font.BOLD, 20);
         JLabel scoreLabel = new JLabel("当前分数:"+viewScores);
         scoreLabel.setLocation(HEIGTH, HEIGTH / 10);
         scoreLabel.setSize(200, 60);
@@ -121,7 +150,7 @@ public class ChessGameFrame extends JFrame {
         return scoreLabel;
     }
     private JLabel loadStepLabel(){
-        Font font = new Font("雅黑", Font.PLAIN, 20);
+        Font font = new Font("雅黑", Font.BOLD, 20);
         JLabel stepLabel = new JLabel("当前步数:"+viewSteps);
         stepLabel.setLocation(HEIGTH, (HEIGTH / 10)+60);
         stepLabel.setSize(200, 60);
@@ -129,7 +158,7 @@ public class ChessGameFrame extends JFrame {
         return stepLabel;
     }
     private JLabel loadLevelLabel(){
-        Font font = new Font("雅黑", Font.PLAIN, 20);
+        Font font = new Font("雅黑", Font.BOLD, 20);
         JLabel levelLabel = new JLabel("当前关卡:"+viewlevel);
         levelLabel.setLocation(HEIGTH, (HEIGTH / 10)-60);
         levelLabel.setSize(200, 60);
@@ -152,28 +181,73 @@ public class ChessGameFrame extends JFrame {
         return label;
     }
 
+    private JLabel addViewRemoveRowLabel(){
+        JLabel label = new JLabel("×"+viewRemoveRow);
+        Font font = new Font("雅黑", Font.BOLD, 30);
+        label.setFont(font);
+        label.setSize(90,30);
+        label.setLocation(15+80, 120+80);
+        return label;
+    }
+    private JLabel addViewRemove33Label(){
+        JLabel label = new JLabel("×"+viewRemove33);
+        Font font = new Font("雅黑", Font.BOLD, 30);
+        label.setFont(font);
+        label.setSize(90,30);
+        label.setLocation(15+80, 120+120+80);
+        return label;
+    }
+    private JLabel addViewRefreshAllLabel(){
+        JLabel label = new JLabel("×"+viewRefreshAll);
+        Font font = new Font("雅黑", Font.BOLD, 30);
+        label.setFont(font);
+        label.setSize(90,30);
+        label.setLocation(15+80, 120+120+120+80);
+        return label;
+    }
+    private JLabel addViewSuperSwapLabel(){
+        JLabel label = new JLabel("×"+viewSuperSwap);
+        Font font = new Font("雅黑", Font.BOLD, 30);
+        label.setFont(font);
+        label.setSize(90,30);
+        label.setLocation(15+80, 120+120+120+120+80);
+        return label;
+    }
     /**
      * 在游戏面板中增加一个按钮，如果按下的话就会显示Hello, world!
      */
 
-    private void addRemoveRowButton() {
+    private JLabel addRemoveRowButton() {
         JLabel label = new JLabel(" ");//设置显示在按钮上的文字
-        label.setIcon(new ImageIcon("./icons/removeRowButton.png"));
+        label.setIcon(new ImageIcon("./icons/"+skin+"/removeRowButton.png"));
         label.addMouseListener(new MouseListener() {
             @Override
             public void mouseClicked(MouseEvent e) {
                 //点击监听器 鼠标点击后执行的代码
-                gameController.removeRow();
+                if (viewRemoveRow>0){
+                    if (viewMode.equals("手动模式")){
+                        gameController.removeRow();
+                    } else if (viewMode.equals("自动模式")) {
+                        gameController.removeRow();
+                        gameController.setNextstep(1);
+                        gameController.onPlayerNextStep();
+                        gameController.onPlayerNextStep();
+                    }
+                    //viewRemoveRow--;放在gamecontroller里了
+                    updateLables();
+                }else{
+                    JOptionPane.showMessageDialog(null,"没有该道具啦！","使用失败",JOptionPane.WARNING_MESSAGE);
+                }
             }
 
             @Override
             public void mousePressed(MouseEvent e) {
-                label.setIcon(new ImageIcon("./icons/removeRowButton_pressed.png"));
+                label.setIcon(new ImageIcon("./icons/"+skin+"/removeRowButton_pressed.png"));
             }
 
             @Override
             public void mouseReleased(MouseEvent e) {
-                label.setIcon(new ImageIcon("./icons/removeRowButton.png"));
+                label.setIcon(new ImageIcon("./icons/"+skin+"/removeRowButton.png"));
             }
 
             @Override
@@ -189,26 +263,39 @@ public class ChessGameFrame extends JFrame {
         label.setLocation(15, 120);
         label.setSize(100, 100);
         label.setFont(new Font("Rockwell", Font.BOLD, 20));
-        add(label);
+        return label;
     }
-    private void addHelloButton2() {
+    private JLabel addRemove33Button() {
         JLabel label = new JLabel(" ");//设置显示在按钮上的文字
-        label.setIcon(new ImageIcon("./icons/remove33.png"));
+        label.setIcon(new ImageIcon("./icons/"+skin+"/remove33.png"));
         label.addMouseListener(new MouseListener() {
             @Override
             public void mouseClicked(MouseEvent e) {
+                if (viewRemove33>0){
+                    if (viewMode.equals("手动模式")){
+                        gameController.remove33();
+                    } else if (viewMode.equals("自动模式")) {
+                        gameController.remove33();
+                        gameController.setNextstep(1);
+                        gameController.onPlayerNextStep();
+                        gameController.onPlayerNextStep();
+                    }
+                    //viewRemove33--;放在gamecontroller里了
+                    updateLables();
+                }else{
+                    JOptionPane.showMessageDialog(null,"没有该道具啦！","使用失败",JOptionPane.WARNING_MESSAGE);
+                }
                 //点击监听器 鼠标点击后执行的代码
-                gameController.removeRow();
             }
 
             @Override
             public void mousePressed(MouseEvent e) {
-                label.setIcon(new ImageIcon("./icons/remove33_pressed.png"));
+                label.setIcon(new ImageIcon("./icons/"+skin+"/remove33_pressed.png"));
             }
 
             @Override
             public void mouseReleased(MouseEvent e) {
-                label.setIcon(new ImageIcon("./icons/remove33.png"));
+                label.setIcon(new ImageIcon("./icons/"+skin+"/remove33.png"));
             }
 
             @Override
@@ -221,24 +308,101 @@ public class ChessGameFrame extends JFrame {
 
             }
         });
-        label.setLocation(15, 120+190);
+        label.setLocation(15, 120+120);
         label.setSize(100, 100);
         label.setFont(new Font("Rockwell", Font.BOLD, 20));
-        add(label);
+        return label;
     }
 
-    private void addHelloButton3() {
-        JButton button = new JButton(" ");//设置显示在按钮上的文字
-        button.addActionListener((e) -> {
-            //点击后 将超级交换步数设置为3
-            gameController.supersteps=3;
-            System.out.println("进入超级交换模式");
-            viewSuperSteps.setText("当前剩余超级交换步数为："+gameController.supersteps);
+    private JLabel addRefreshALlButton() {
+        JLabel label = new JLabel(" ");//设置显示在按钮上的文字
+        label.setIcon(new ImageIcon("./icons/"+skin+"/RefreshAll.png"));
+        label.addMouseListener(new MouseListener() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                if (viewRefreshAll>0){
+                    if (viewMode.equals("手动模式")){
+                        gameController.RefreshAll();
+                    } else if (viewMode.equals("自动模式")) {
+                        gameController.RefreshAll();
+                        gameController.onPlayerNextStep();
+                    }
+                    viewRefreshAll--;
+                    updateLables();
+                }else{
+                    JOptionPane.showMessageDialog(null,"没有该道具啦！","使用失败",JOptionPane.WARNING_MESSAGE);
+                }
+                //点击监听器 鼠标点击后执行的代码
+            }
+
+            @Override
+            public void mousePressed(MouseEvent e) {
+                label.setIcon(new ImageIcon("./icons/"+skin+"/RefreshAll_pressed.png"));
+            }
+
+            @Override
+            public void mouseReleased(MouseEvent e) {
+                label.setIcon(new ImageIcon("./icons/"+skin+"/RefreshAll.png"));
+            }
+
+            @Override
+            public void mouseEntered(MouseEvent e) {
+
+            }
+
+            @Override
+            public void mouseExited(MouseEvent e) {
+
+            }
         });
-        button.setLocation(15, 120+190+190);
-        button.setSize(100, 50);
-        button.setFont(new Font("Rockwell", Font.BOLD, 20));
-        add(button);
+        label.setLocation(15, 120+120+120);
+        label.setSize(100, 100);
+        label.setFont(new Font("Rockwell", Font.BOLD, 20));
+        return label;
+    }
+
+    private JLabel addSuperSwapButton() {
+        JLabel label = new JLabel(" ");//设置显示在按钮上的文字
+        label.setIcon(new ImageIcon("./icons/"+skin+"/SuperSwap.png"));
+        label.addMouseListener(new MouseListener() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                if (viewSuperSwap>0){
+                    //点击后 将超级交换步数设置为3
+                    gameController.supersteps=3;
+                    System.out.println("进入超级交换模式");
+                    viewSuperSteps.setText("当前剩余超级交换步数为："+gameController.supersteps);
+                    viewSuperSwap--;
+                    updateLables();
+                }else{
+                    JOptionPane.showMessageDialog(null,"没有该道具啦！","使用失败",JOptionPane.WARNING_MESSAGE);
+                }
+
+            }
+
+            @Override
+            public void mousePressed(MouseEvent e) {
+                label.setIcon(new ImageIcon("./icons/"+skin+"/SuperSwap_pressed.png"));
+            }
+
+            @Override
+            public void mouseReleased(MouseEvent e) {
+                label.setIcon(new ImageIcon("./icons/"+skin+"/SuperSwap.png"));
+            }
+
+            @Override
+            public void mouseEntered(MouseEvent e) {
+
+            }
+
+            @Override
+            public void mouseExited(MouseEvent e) {
+
+            }
+        });
+        label.setLocation(15, 120+120+120+120);
+        label.setSize(100, 100);
+        return label;
     }
 
 
@@ -293,6 +457,8 @@ public class ChessGameFrame extends JFrame {
                 chessboardComponent.autoSwapChess();
             }
             //fjm
+            updateLables();
+            gameController.isnextlevel();
         });
         button.setLocation(HEIGTH, HEIGTH / 10 + 200);
         button.setSize(200, 60);
@@ -332,45 +498,6 @@ public class ChessGameFrame extends JFrame {
         add(button);
         return button;
     }//冯俊铭
-
-    /*private void addLoadButton() {
-        JButton button = new JButton("Load");
-       button.setLocation(HEIGTH, HEIGTH / 10 + 360);
-        button.setSize(200, 60);
-        button.setFont(new Font("Rockwell", Font.BOLD, 20));
-        add(button);
-
-        button.addActionListener(e -> {
-            System.out.println("Click load");
-            String path = JOptionPane.showInputDialog(this,"Input Path here");
-            gameController.loadGameFromFile(path);
-        });
-    }//冯俊铭 23/12/10/22:56*/
-
-    /*protected JButton addSaveButton() {
-        JButton button = new JButton("Save");
-        button.setLocation(HEIGTH, HEIGTH / 10 + 360);
-        button.setSize(200, 60);
-        button.setFont(new Font("Rockwell", Font.BOLD, 20));
-        add(button);
-
-        button.addActionListener(e -> {
-            if (!gameController.isIronMode){
-                //如果不是铁人游戏，则可以保存
-                System.out.println("Click save");
-                FileDialog fileDialog = new FileDialog(this,"选择你要保存的路径",FileDialog.SAVE);
-                fileDialog.setVisible(true);
-                String path = fileDialog.getDirectory()+fileDialog.getFile()+".txt";
-                chessboardComponent.getGameController().saveGameToFile(path);
-            }if (gameController.isIronMode){
-                //如果是铁人游戏，则跳出弹窗提示不能保存
-                System.out.println("这是铁人模式，不允许存档");
-                JOptionPane.showMessageDialog(this,"这是铁人模式，不能存档！","不能存档！",JOptionPane.WARNING_MESSAGE);
-            }
-
-        });
-        return button;
-    }//冯俊铭 23/12/10/21：29*/
     protected void Saving(){
         if (!gameController.isIronMode){
             //如果不是铁人游戏，则可以保存
@@ -439,7 +566,7 @@ public class ChessGameFrame extends JFrame {
         JButton button = new JButton("模式转换");
         button.setLocation(HEIGTH, HEIGTH / 10 + 440);
         button.setSize(200, 60);
-        button.setFont(new Font("雅黑", Font.PLAIN, 20));
+        button.setFont(new Font("雅黑", Font.BOLD, 20));
         button.addActionListener(e ->{
             Boolean canTransfergame = true;
             if (gameController.getMode() == 1) {
@@ -474,7 +601,7 @@ public class ChessGameFrame extends JFrame {
             this.scoreLabel.setText("当前分数:"+viewScores);//将取到的游戏分数修改到Label上
         }
         {//更新步数标签
-            this.viewSteps=chessboardComponent.getGameController().getFootsteps();//同理 -> gameController里的steps变量
+            this.viewSteps=chessboardComponent.getGameController().getsteps();//同理 -> gameController里的steps变量
             System.out.println("当前应显示步数为："+viewSteps);
             this.stepLabel.setText("当前步数:"+viewSteps);
         }
@@ -487,12 +614,18 @@ public class ChessGameFrame extends JFrame {
             this.viewSuperSteps.setText("当前剩余超级交换步数为："+gameController.supersteps);
             System.out.println("当前应显示超级步数为："+gameController.supersteps);
         }
+        {//更新道具标签
+            this.viewRemoveRowLabel.setText("×"+viewRemoveRow);
+            this.viewRemove33Label.setText("×"+viewRemove33);
+            this.viewRefreshAllLabel.setText("×"+viewRefreshAll);
+            this.viewSuperSwapLabel.setText("×"+viewSuperSwap);
+        }
     }
     public void registerGameController(GameController gameController){
         this.gameController = gameController;
     }//fjm 注册gameController方便调用里面的方法
     private JLabel addBackgroundLabel(){
-        JLabel backgroundLabel = new JLabel(new ImageIcon("./icons/chessGameFrame.png"));
+        JLabel backgroundLabel = new JLabel(new ImageIcon("./icons/"+skin+"/chessGameFrame.png"));
         backgroundLabel.setSize(1090,800);
         backgroundLabel.setLocation(0,0);
         return backgroundLabel;
@@ -532,9 +665,62 @@ public class ChessGameFrame extends JFrame {
         return label;
     }//冯俊铭 用JLabel添加设置按钮
 
+    public String getSkin() {
+        return skin;
+    }//fjm
 
+    public void setSkin(String skin) {
+        this.skin = skin;
+    }//fjm
+
+    public void changeSkin(String skinName){
+        if (skinName.equals("默认")){
+            this.skin = "default";
+        }else if (skinName.equals("PVZ主题")){
+            this.skin = "PVZ";
+        }
+        chessboardComponent.setSkin(skin);
+        removeRowButton.setIcon(new ImageIcon("./icons/"+skin+"/removeRowButton.png"));
+        remove33Button.setIcon(new ImageIcon("./icons/"+skin+"/remove33.png"));
+        refreshAllButton.setIcon(new ImageIcon("./icons/"+skin+"/RefreshAll.png"));
+        superSwapButton.setIcon(new ImageIcon("./icons/"+skin+"/SuperSwap.png"));
+        background.setIcon(new ImageIcon("./icons/"+skin+"/chessGameFrame.png"));
+        gameController.changeSkin();//使棋盘的棋子改变
+    }//fjm 这是用来设置、更改皮肤的方法
 
     public void registerSettingFrame(SettingFrame settingFrame){
         this.settingFrame = settingFrame;
     }//冯俊铭 给主窗口绑定设置窗口
+    public int getViewRemove33() {
+        return viewRemove33;
+    }
+
+    public void setViewRemove33(int viewRemove33) {
+        this.viewRemove33 = viewRemove33;
+    }
+
+    public int getViewRemoveRow() {
+        return viewRemoveRow;
+    }
+
+    public void setViewRemoveRow(int viewRemoveRow) {
+        this.viewRemoveRow = viewRemoveRow;
+    }
+
+    public int getViewRefreshAll() {
+        return viewRefreshAll;
+    }
+
+    public void setViewRefreshAll(int viewRefreshAll) {
+        this.viewRefreshAll = viewRefreshAll;
+    }
+
+    public int getViewSuperSwap() {
+        return viewSuperSwap;
+    }
+
+    public void setViewSuperSwap(int viewSuperSwap) {
+        this.viewSuperSwap = viewSuperSwap;
+    }
+
 }

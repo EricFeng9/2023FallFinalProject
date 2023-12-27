@@ -20,6 +20,10 @@ import static model.Constant.CHESSBOARD_ROW_SIZE;
 public class ChessboardComponent extends JComponent {
     private final CellComponent[][] gridComponents = new CellComponent[CHESSBOARD_ROW_SIZE.getNum()][CHESSBOARD_COL_SIZE.getNum()];
     private final int CHESS_SIZE;
+    private String skin;
+
+
+
     private final Set<ChessboardPoint> riverCell = new HashSet<>();
 
     private GameController gameController;
@@ -56,12 +60,11 @@ public class ChessboardComponent extends JComponent {
                 if (grid[i][j].getPiece() != null) {
                     ChessPiece chessPiece = grid[i][j].getPiece();
                     ChessComponent chessComponent = null;
-                        chessComponent = new ChessComponent(CHESS_SIZE, chessPiece);
+                    chessComponent = new ChessComponent(CHESS_SIZE, chessPiece,skin);
                     gridComponents[i][j].add(chessComponent);
                 }
             }
         }
-
     }
 
     public void initiateGridComponents() {
@@ -165,5 +168,12 @@ public class ChessboardComponent extends JComponent {
             //冯俊铭 每点击一次格子，让gameController执行自动化方法
             gameController.Auto();
         }
+    }
+    public String getSkin() {
+        return skin;
+    }
+
+    public void setSkin(String skin) {
+        this.skin = skin;
     }
 }

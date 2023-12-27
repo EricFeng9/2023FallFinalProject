@@ -13,7 +13,7 @@ public class Main {
             ChessGameFrame mainFrame = new ChessGameFrame(1100, 810);
             GameController gameController = new GameController(mainFrame.getChessboardComponent(), new Chessboard(),mainFrame);
             mainFrame.registerGameController(gameController);//fjm 注册gameController方便调用
-            StartFrame startFrame = new StartFrame(300,630,gameController,mainFrame);
+            StartFrame startFrame = new StartFrame(900,600,gameController,mainFrame);
             SettingFrame settingFrame = new SettingFrame(gameController,mainFrame,startFrame);
             mainFrame.registerSettingFrame(settingFrame);
             //gameController.setStatusLabel(mainFrame.getStatusLabel());

@@ -2,6 +2,8 @@ package view;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 
 /**
  * This is the equivalent of the Cell class,
@@ -11,11 +13,22 @@ import java.awt.*;
 public class CellComponent extends JPanel {
     private Color background;
 
+    @Override
+    public Color getBackground() {
+        return background;
+    }
+
+    @Override
+    public void setBackground(Color background) {
+        this.background = background;
+    }
+
     public CellComponent(Color background, Point location, int size) {
         setLayout(new GridLayout(1,1));
         setLocation(location);
         setSize(size, size);
         this.background = background;
+
     }
 
     @Override

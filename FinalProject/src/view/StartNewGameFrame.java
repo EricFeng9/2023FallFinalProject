@@ -17,7 +17,9 @@ public class StartNewGameFrame extends JFrame {
     Chessboard chessboard;
     String gamename;
     Choice modechoice;
+    Choice skinchoice;
     JCheckBox isIronCheckbox;
+    JCheckBox canUseProp;
     JLabel background;
     public GameController getGameController() {
         return gameController;
@@ -63,9 +65,13 @@ public class StartNewGameFrame extends JFrame {
         addmodeLabel();
         this.isIronCheckbox=addCheckBox1();
         add(isIronCheckbox);
-        addCheckBox2();
+        this.canUseProp = addCheckBox2();
+        add(canUseProp);
         this.modechoice = addmodechoice();
         add(modechoice);
+        this.skinchoice = addSkinchoice();
+        add(skinchoice);
+        addSkinLabel();
         this.background =addBackgroundLabel();
         add(background);
         this.setResizable(false);//冯俊铭 设置窗口不能改变大小
@@ -77,12 +83,11 @@ public class StartNewGameFrame extends JFrame {
         JButton startButton = new JButton("开始游戏！");
         Font font = new Font("雅黑",Font.PLAIN,20);
         startButton.setFont(font);
-        startButton.setLocation(77,300);
+        startButton.setLocation(77,300+30);
         startButton.setSize(146,46);
         startButton.addActionListener(e -> {
             //先把gameController中的view取出来（无所谓这个view长什么样）
             ChessboardComponent view = gameController.getView();
-
             gameController.getModel().initPieces();//让model棋盘的元素重新生成
 
             //遍历棋盘 删除掉view中各个Point点的Grid
@@ -114,35 +119,46 @@ public class StartNewGameFrame extends JFrame {
             gameController.setScore(0);
             gameController.setSteps(0);
             gameController.setLevel(1);
-            mainFrame.updateLables();//初始化参数后要更新分数标签
             gameController.setName(gamename);//设置存档名
-            gameController.isIronMode= isIronCheckbox.isSelected();//设置铁人模式
+            //设置铁人模式
+            gameController.isIronMode= isIronCheckbox.isSelected();
             if (isIronCheckbox.isSelected()){
                 mainFrame.setTitle(gamename+"的游戏 【铁人模式】");
             }else mainFrame.setTitle(gamename+"的游戏");
-
-            if (modechoice.getSelectedItem().equals("手动模式") && gamename!=null){
+            //设置手动自动模式
+            if (modechoice.getSelectedItem().equals("手动模式")){
                 gameController.setMode(1);//手动模式为模式1
-                mainFrame.getGameControllerToLoadViewMode(gameController);
-                System.out.println("——————游戏初始化完毕——————");
-                System.out.println("当前游戏存档名为："+gamename);//试输出存档名
-                System.out.println("当前游戏模式为："+mainFrame.getViewMode());//试输出模式
-                mainFrame.setVisible(true);
-                this.setVisible(false);
-            }else if(modechoice.getSelectedItem().equals("自动模式")&& gamename!=null){
+            }else if(modechoice.getSelectedItem().equals("自动模式")){
                 gameController.setMode(2);//自动模式为模式2
+            }
+            //设置道具
+            if (canUseProp.isSelected()){
+                mainFrame.setViewRemoveRow(0);
+                mainFrame.setViewRemove33(0);
+                mainFrame.setViewRefreshAll(0);
+                mainFrame.setViewSuperSwap(0);
+            }else {
+                mainFrame.setViewRemoveRow(2);
+                mainFrame.setViewRemove33(2);
+                mainFrame.setViewRefreshAll(1);
+                mainFrame.setViewSuperSwap(2);
+            }
+            //设置皮肤
+            mainFrame.changeSkin(skinchoice.getSelectedItem());
+            mainFrame.repaint();
+            //检查游戏名称是否为空，不为空再启动
+            if (gamename==null) {
+                JOptionPane.showMessageDialog(this,"还没有输入存档名","还不能开始噢",JOptionPane.WARNING_MESSAGE);
+            }else {
+                mainFrame.updateLables();//初始化参数后要更新标签
                 mainFrame.getGameControllerToLoadViewMode(gameController);
                 System.out.println("——————游戏初始化完毕——————");
                 System.out.println("当前游戏存档名为："+gamename);//试输出存档名
                 System.out.println("当前游戏模式为："+mainFrame.getViewMode());//试输出模式
+                System.out.println("当前游戏主题为："+mainFrame.getSkin());//试输出当前皮肤
                 mainFrame.setVisible(true);
                 this.setVisible(false);
-            } else if (gamename==null) {
-                JOptionPane.showMessageDialog(this,"还没有输入存档名","还不能开始噢",JOptionPane.WARNING_MESSAGE);
-            } else{
-                JOptionPane.showMessageDialog(this,"还未选择模式","还不能开始噢",JOptionPane.WARNING_MESSAGE);
             }
-
         });
         this.add(startButton);
         startButton.setVisible(true);
@@ -202,33 +218,53 @@ public class StartNewGameFrame extends JFrame {
         choice.add("手动模式");
         choice.add("自动模式");
         choice.setFont(font);
-        choice.setName("请选择你的模式");
+        choice.setName("手动模式");
         choice.setLocation(110,140);
         choice.setSize(170,15);
         choice.setVisible(true);
         return choice;
     }
-
+    private void addSkinLabel(){
+        JLabel startLabel = new JLabel();
+        Font font =new Font("雅黑",Font.BOLD,20);
+        startLabel.setFont(font);
+        startLabel.setText("棋盘皮肤");
+        startLabel.setLocation(10,140+50);
+        startLabel.setSize(90,20);
+        this.add(startLabel);
+        startLabel.setVisible(true);
+    }//fjm
+    private Choice addSkinchoice(){
+        Choice choice = new Choice();
+        Font font =new Font("雅黑",Font.PLAIN,15);
+        choice.add("默认");
+        choice.add("PVZ主题");
+        choice.setFont(font);
+        choice.setName("默认");
+        choice.setLocation(110,140+50);
+        choice.setSize(170,15);
+        choice.setVisible(true);
+        return choice;
+    }//fjm
     private JCheckBox addCheckBox1(){
         JCheckBox checkBox1 = new JCheckBox();
         Font font =new Font("雅黑",Font.PLAIN,17);
         checkBox1.setFont(font);
         checkBox1.setText("铁人游戏（无法存档）");
-        checkBox1.setLocation(20,200);
+        checkBox1.setLocation(20,200+50);
         checkBox1.setSize(200,17);
         checkBox1.setOpaque(false);//设置组件为透明
         return checkBox1;
     }
-    private void addCheckBox2(){
+    private JCheckBox addCheckBox2(){
         JCheckBox checkBox2 = new JCheckBox();
         Font font =new Font("雅黑",Font.PLAIN,17);
         checkBox2.setFont(font);
         checkBox2.setText("禁用道具");
-        checkBox2.setLocation(20,240);
+        checkBox2.setLocation(20,240+50);
         checkBox2.setSize(200,17);
         checkBox2.setOpaque(false);//组件为透明
-        this.add(checkBox2);
-        checkBox2.setVisible(true);
+        return checkBox2;
     }
     private JLabel addBackgroundLabel(){
         JLabel backgroundLabel = new JLabel(new ImageIcon("./icons/startNewGameFrame.png"));

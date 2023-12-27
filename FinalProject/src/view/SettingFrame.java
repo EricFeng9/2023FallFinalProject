@@ -5,6 +5,8 @@ import model.Chessboard;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 
 public class SettingFrame extends JDialog {
     GameController gameController;
@@ -15,6 +17,7 @@ public class SettingFrame extends JDialog {
     JButton loadButton;
     JButton exitToStartFrameButton;
     JButton exitToDesktopButton;
+    Choice changeSkinChoice;
     public SettingFrame(GameController gameController,ChessGameFrame mainFrame,StartFrame startFrame){
         this.mainFrame =mainFrame;
         this.gameController= gameController;
@@ -30,6 +33,9 @@ public class SettingFrame extends JDialog {
         add(loadButton);
         this.exitToDesktopButton=addExitToDesktopButton();
         add(exitToDesktopButton);
+        this.changeSkinChoice = addSkinchoice();
+        add(changeSkinChoice);
+        addSkinLabel();
         this.background=addBackgroundLabel();
         add(background);
         this.setModalityType(JDialog.ModalityType.APPLICATION_MODAL);
@@ -41,6 +47,35 @@ public class SettingFrame extends JDialog {
         backgroundLabel.setLocation(0,0);
         return backgroundLabel;
     }//fjm 设置背景图
+
+    private void addSkinLabel(){
+        JLabel startLabel = new JLabel();
+        Font font =new Font("雅黑",Font.BOLD,16);
+        startLabel.setFont(font);
+        startLabel.setText("棋盘皮肤");
+        startLabel.setLocation(10,70);
+        startLabel.setSize(90,20);
+        this.add(startLabel);
+        startLabel.setVisible(true);
+    }//fjm
+    private Choice addSkinchoice(){
+        Choice choice = new Choice();
+        Font font =new Font("雅黑",Font.PLAIN,15);
+        choice.add("默认");
+        choice.add("PVZ主题");
+        choice.setFont(font);
+        choice.setName("默认");
+        choice.setLocation(10+70,70);
+        choice.setSize(100,15);
+        choice.setVisible(true);
+        choice.addItemListener(new ItemListener() {
+            @Override
+            public void itemStateChanged(ItemEvent e) {
+                mainFrame.changeSkin(choice.getSelectedItem());
+            }
+        });
+        return choice;
+    }//fjm
     private JButton addSavingButton(){
         JButton button = new JButton("保存游戏");
         button.setLocation(20, 180);
