@@ -369,6 +369,7 @@ public class GameController implements GameListener {
         saveLines.add("当前RefreshAll:" + mainFrame.getViewRefreshAll());
         saveLines.add("当前SuperSwap:" + mainFrame.getViewSuperSwap());
         saveLines.add("当前皮肤:" + mainFrame.getSkin());
+        saveLines.add("是否能使用道具:" + canUseProp);
         saveLines.add("当前模式:" + mode);//模式必须存在最后一行
         try {
             Files.write(Path.of(path), saveLines);//写文件
@@ -448,6 +449,14 @@ public class GameController implements GameListener {
                         String temp = info[1];
                         mainFrame.setSkin(temp);
                         System.out.println("导入成功，当前皮肤:" + temp);
+                    }case "是否能使用道具"->{
+                        String temp = info[1];
+                        if (temp.equals("false")){
+                            canUseProp=false;
+                        }else {
+                            canUseProp=true;
+                        }
+                        System.out.println("导入成功，当前能否使用道具:" + temp);
                     }
                 }
             }

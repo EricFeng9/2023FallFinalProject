@@ -867,8 +867,8 @@ public class Chessboard {
             }
         }
 
-        if (readLines.size()-11==Constant.CHESSBOARD_ROW_SIZE.getNum()){
-            //记得保存的参数如果多一行，这里-10必须也要改！！！
+        if (readLines.size()-12==Constant.CHESSBOARD_ROW_SIZE.getNum()){
+            //记得保存的参数如果多一行，这里-12必须也要改！！！
             //读入的readLines的大小必须与棋盘行数匹配（readLines里一个位置存着棋盘里一行的数据）才能进行下一步逐行读入
             for (int i = 0; i < Constant.CHESSBOARD_ROW_SIZE.getNum(); i++){
                 sb.setLength(0);//遍历每一行前先清空StringBuilder
