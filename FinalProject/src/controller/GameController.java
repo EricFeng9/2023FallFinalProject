@@ -55,6 +55,7 @@ public class GameController implements GameListener {
 
     private int score = 0;
     private int steps = 0;
+    private boolean canUseProp;
     int minscore;
     private String name = "新游戏";
     private int mode = 1;//游戏模式，1是手动模式、2是自动模式
@@ -177,6 +178,7 @@ public class GameController implements GameListener {
             view.repaint();//冯俊铭 !!交换后执行repaint()重绘该组件 避免摇一摇更新
             System.out.println("交换未执行，消除了棋盘上还可以消除的棋子");
             nextstep = 1;//fjm !!一旦交换，则将nextstep必须改成1 避免交换后nextstep执行case2方法导致棋子不下落而直接生成新的
+            isnextlevel();
             return 103;//返回103表示没有交换，消除了棋盘上还能消除的棋子
         } else return 102;//返回102表示没有选择两个点，且棋盘上已经没有棋子可以消除了
 
@@ -274,8 +276,7 @@ public class GameController implements GameListener {
         System.out.println("现在的分数是：" + score);
         System.out.println("已经走的步数是" + steps);
 
-        isnextlevel();//冯俊铭 不用传参数 score和steps就在GameController里面
-        System.out.println("Implement your next step here.");
+        //isnextlevel();//冯俊铭 这个方法开始也会用，不要在这里判断是否下一关 否则会在开始新游戏的时候报窗口
     }//江易明
 
     public int getScore() {
@@ -362,7 +363,13 @@ public class GameController implements GameListener {
         saveLines.add("当前关卡:" + level);
         saveLines.add("当前步数:" + steps);
         saveLines.add("当前分数:" + score);
-        saveLines.add("当前模式:" + mode);
+        saveLines.add("当前剩余超级交换步数:" + supersteps);
+        saveLines.add("当前RemoveRow:" + mainFrame.getViewRemoveRow());
+        saveLines.add("当前Remove33:" + mainFrame.getViewRemove33());
+        saveLines.add("当前RefreshAll:" + mainFrame.getViewRefreshAll());
+        saveLines.add("当前SuperSwap:" + mainFrame.getViewSuperSwap());
+        saveLines.add("当前皮肤:" + mainFrame.getSkin());
+        saveLines.add("当前模式:" + mode);//模式必须存在最后一行
         try {
             Files.write(Path.of(path), saveLines);//写文件
         } catch (IOException e) {
@@ -417,8 +424,35 @@ public class GameController implements GameListener {
                         score = Integer.parseInt(info[1]);
                         System.out.println("导入成功，当前分数" + score);
                     }
+                    case "当前剩余超级交换步数"->{
+                        int temp = Integer.parseInt(info[1]);
+                        supersteps = temp;
+                        System.out.println("导入成功，当前剩余超级交换步数:" + temp);
+                    }case "当前RemoveRow"->{
+                        int temp = Integer.parseInt(info[1]);
+                        mainFrame.setViewRemoveRow(temp);
+                        System.out.println("导入成功，当前剩余RemoveRow:" + temp);
+                    }case "当前Remove33"->{
+                        int temp = Integer.parseInt(info[1]);
+                        mainFrame.setViewRemove33(temp);
+                        System.out.println("导入成功，当前剩余Remove33:" + temp);
+                    }case "当前RefreshAll"->{
+                        int temp = Integer.parseInt(info[1]);
+                        mainFrame.setViewRefreshAll(temp);
+                        System.out.println("导入成功，当前剩余RefreshAll:" + temp);
+                    }case "当前SuperSwap"->{//道具数
+                        int temp = Integer.parseInt(info[1]);
+                        mainFrame.setViewSuperSwap(temp);
+                        System.out.println("导入成功，当前剩余SuperSwap:" + temp);
+                    }case "当前皮肤"->{
+                        String temp = info[1];
+                        mainFrame.setSkin(temp);
+                        System.out.println("导入成功，当前皮肤:" + temp);
+                    }
                 }
             }
+            view.repaint();
+            mainFrame.updateLables();
             if (mode == 1) {
                 return 1001;//1001表示导入成功，模式为手动模式
             } else if (mode == 2) {
@@ -457,58 +491,146 @@ public class GameController implements GameListener {
             case 1:
                 System.out.println("现在在第一关");
                 minscore = 200;//test
-                levelsteps = 20;
-                showsteps = levelsteps - steps;
-                System.out.println("剩余步数为" + showsteps);
-                if (showsteps >= 0) {
+                levelsteps = 15;
+                if (steps<=levelsteps) {
                     if (score >= minscore) {
-                        score = 0;
-                        level++;
                         System.out.println("pass");//TODO:弹窗您成功通过第一关，选择窗口是否进入第二关 or save；
-                        steps = 0;
+                        yesOrNoNextLevel();
                     }
 
                 }
-                if (showsteps == 0 && score < minscore) {
+                if (steps>=levelsteps && score < minscore) {
                     System.out.println("Sorry,you failed");//TODO:弹窗对不起您失败了。
+                    yesOrNoRestartLevel();
                 }
                 break;
             case 2:
                 System.out.println("现在进入第二关");
-                minscore = 10000;
-                levelsteps = 5;//test
-                showsteps = levelsteps - steps;
-                if (showsteps >= 0) {
+                minscore = 400;
+                levelsteps = 15;//test
+                if (steps<=levelsteps ) {
                     if (score >= minscore) {
-                        score = 0;
-                        level++;
                         System.out.println("pass");//TODO:弹窗您成功通过第二关，选择窗口是否进入第三关 or save；
-                        steps = 0;
+                        yesOrNoNextLevel();
                     }
                 }
-                if (showsteps == 0 && score < minscore) {
+                if (steps>=levelsteps && score < minscore) {
                     System.out.println("Sorry,you failed");//TODO:弹窗对不起您失败了。
+                    yesOrNoRestartLevel();
                 }
                 break;
             case 3:
                 System.out.println("现在进入第三关");
-                minscore = 10000;
-                levelsteps = 10;
+                minscore = 500;
+                levelsteps = 15;
                 showsteps = levelsteps - steps;
-                if (showsteps >= 0) {
+                if (steps<=levelsteps) {
                     if (score >= minscore) {
-                        score = 0;
                         System.out.println("pass");//TODO:弹窗您成功通过第三关，gratulation；
+                        yesOrNoNextLevel();
                     }
 
                 }
-                if (showsteps == 0 && score < minscore) {
+                if (steps>=levelsteps && score < minscore) {
                     System.out.println("Sorry,you failed");//TODO:弹窗对不起您失败了。
+                    yesOrNoRestartLevel();
+                }
+                break;
+            case 4:
+                System.out.println("现在进入第四关");
+                minscore = 800;
+                levelsteps = 15;
+                if (steps<=levelsteps) {
+                    if (score >= minscore) {
+                        score = 0;
+                        System.out.println("pass");//TODO:弹窗您成功通过第四关，gratulation；
+                        yesOrNoNextLevel();
+                    }
+
+                }
+                if (steps>=levelsteps && score < minscore) {
+                    System.out.println("Sorry,you failed");//TODO:弹窗对不起您失败了。
+                }
+                break;
+            case 5:
+                System.out.println("现在进入第五关");
+                minscore = 1000;
+                levelsteps = 10;
+                if (steps<=levelsteps) {
+                    if (score >= minscore) {
+                        int option = JOptionPane.showConfirmDialog(mainFrame,"是否重新开始？\n(“是”则在当前棋盘重新开始新的游戏，“否”则停留在当前棋盘)","恭喜!你完成了所有关卡", JOptionPane.YES_NO_CANCEL_OPTION);
+                        if (option==JOptionPane.YES_OPTION){
+                            score = 0;
+                            level = 0;
+                            steps = 0;
+                            if (canUseProp){
+                                mainFrame.setViewRemoveRow(2);
+                                mainFrame.setViewRemove33(2);
+                                mainFrame.setViewRefreshAll(1);
+                                mainFrame.setViewSuperSwap(2);
+                            }else {
+                                mainFrame.setViewRemoveRow(0);
+                                mainFrame.setViewRemove33(0);
+                                mainFrame.setViewRefreshAll(0);
+                                mainFrame.setViewSuperSwap(0);
+                            }
+                            model.initPieces();//让model棋盘的元素重新生成
+                            //遍历棋盘 删除掉view中各个Point点的Grid
+                            for (int i = 0; i < Constant.CHESSBOARD_ROW_SIZE.getNum(); i++) {
+                                for (int j = 0; j < Constant.CHESSBOARD_COL_SIZE.getNum(); j++) {
+                                    ChessboardPoint point = new ChessboardPoint(i,j);
+                                    view.removeChessComponentAtGrid(point);
+                                }
+                            }
+                            //再根据初始化好的model棋盘重新生成view
+                            view.initiateChessComponent(model);
+                            //初始化model棋盘
+                            while (model.ismatch()){
+                                onPlayerAutoNextStep();
+                            }
+                            //先遍历棋盘 删除掉view中各个Point点的Grid
+                            for (int i = 0; i < Constant.CHESSBOARD_ROW_SIZE.getNum(); i++) {
+                                for (int j = 0; j < Constant.CHESSBOARD_COL_SIZE.getNum(); j++) {
+                                    ChessboardPoint point = new ChessboardPoint(i,j);
+                                    view.removeChessComponentAtGrid(point);
+                                }
+                            }
+                            //再根据初始化好的model棋盘重新生成view
+                            view.initiateChessComponent(model);
+                            view.repaint();
+                            mainFrame.updateLables();
+                        }
+
+                    }
+
+                }
+                if (steps>=levelsteps && score < minscore) {
+                    System.out.println("Sorry,you failed");//TODO:弹窗对不起您失败了。
+                    yesOrNoRestartLevel();
                 }
                 break;
         }
     }//江易明and冯俊铭 2023.12.18
-
+    private boolean yesOrNoNextLevel(){
+        //主要是弹出对话框确认
+        int option = JOptionPane.showConfirmDialog(mainFrame,"是否进入下一关？\n(“是”则进入下一关，“否”则停留在当前棋盘)","恭喜过关", JOptionPane.YES_NO_CANCEL_OPTION);
+        if (option == JOptionPane.YES_OPTION){
+            score = 0;
+            level++;
+            steps = 0;
+            mainFrame.updateLables();
+            return true;
+        }else {
+            return false;
+        }
+    }//fjm 代码复用
+    private void yesOrNoRestartLevel(){
+        int option = JOptionPane.showConfirmDialog(mainFrame,"是否返回主界面？\n(“是”返回主界面，“否”则停留在当前棋盘)","失败啦", JOptionPane.YES_NO_OPTION);
+        if (option == JOptionPane.YES_OPTION){
+            mainFrame.setVisible(false);
+            mainFrame.getSettingFrame().getStartFrame().setVisible(true);
+        }
+    }
     public void Auto() {
         //这个自动方法只有在模式2才生效，模式1不生效 且 只有选中了两个格子才能生效
         if (mode == 2 && selectedPoint != null && selectedPoint2 != null) {
@@ -565,6 +687,7 @@ public class GameController implements GameListener {
             view.initiateChessComponent(model);
             view.repaint();//交换后执行repaint()重绘该组件 避免摇一摇更新
             nextstep=1;
+            isnextlevel();//点击后判断能否下一关
             System.out.println("点击了火爆辣椒按钮");
             mainFrame.setViewRemoveRow(mainFrame.getViewRemoveRow()-1);
         }else {
@@ -675,6 +798,7 @@ public class GameController implements GameListener {
             view.initiateChessComponent(model);
             view.repaint();
             nextstep=1;
+            isnextlevel();//点击后判断能否下一关
             System.out.println("点击了樱桃炸弹");
             mainFrame.setViewRemove33(mainFrame.getViewRemove33()-1);
         }else {
@@ -694,6 +818,7 @@ public class GameController implements GameListener {
             }
         }
         nextstep=3;
+        isnextlevel();//消除完后判断能否下一关
         //view.initiateChessComponent(model);
         view.repaint();
     }
@@ -751,6 +876,7 @@ public class GameController implements GameListener {
             }
             //消除完毕
             view.repaint();//冯俊铭 !!交换后执行repaint()重绘该组件 避免摇一摇更新
+            isnextlevel();//冯俊铭 判断是否进入下一关！！之前没加这个所以换不了关
             System.out.println("交换未执行，消除了棋盘上还可以消除的棋子");
             nextstep = 1;//fjm !!一旦交换，则将nextstep必须改成1 避免交换后nextstep执行case2方法导致棋子不下落而直接生成新的
             return 101;//101表示交换了未交换的棋子
@@ -837,4 +963,11 @@ public class GameController implements GameListener {
         this.nextstep = nextstep;
     }
 
+    public boolean isCanUseProp() {
+        return canUseProp;
+    }
+
+    public void setCanUseProp(boolean canUseProp) {
+        this.canUseProp = canUseProp;
+    }
 }

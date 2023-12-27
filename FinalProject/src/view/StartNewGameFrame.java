@@ -133,6 +133,7 @@ public class StartNewGameFrame extends JFrame {
             }
             //设置道具
             if (canUseProp.isSelected()){
+                gameController.setCanUseProp(false);
                 mainFrame.setViewRemoveRow(0);
                 mainFrame.setViewRemove33(0);
                 mainFrame.setViewRefreshAll(0);
@@ -144,7 +145,7 @@ public class StartNewGameFrame extends JFrame {
                 mainFrame.setViewSuperSwap(2);
             }
             //设置皮肤
-            mainFrame.changeSkin(skinchoice.getSelectedItem());
+            mainFrame.setSkin(skinchoice.getSelectedItem());
             mainFrame.repaint();
             //检查游戏名称是否为空，不为空再启动
             if (gamename==null) {

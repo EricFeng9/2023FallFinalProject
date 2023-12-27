@@ -146,6 +146,7 @@ public class ChessboardComponent extends JComponent {
 
     public void autoNextStep(){
         gameController.onPlayerAutoNextStep();
+        gameController.isnextlevel();//fjm 不要在onPlayerAutoNextStep()中检测是否下一关，因为会导致开局爆弹窗
     }//冯俊铭 调用自动的下一步
     @Override
     protected void paintComponent(Graphics g) {

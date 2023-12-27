@@ -64,14 +64,14 @@ public class SettingFrame extends JDialog {
         choice.add("默认");
         choice.add("PVZ主题");
         choice.setFont(font);
-        choice.setName("默认");
+        choice.setName("请选择要更换的皮肤");
         choice.setLocation(10+70,70);
         choice.setSize(100,15);
         choice.setVisible(true);
         choice.addItemListener(new ItemListener() {
             @Override
             public void itemStateChanged(ItemEvent e) {
-                mainFrame.changeSkin(choice.getSelectedItem());
+                mainFrame.setSkin(choice.getSelectedItem());
             }
         });
         return choice;
@@ -125,5 +125,11 @@ public class SettingFrame extends JDialog {
         return button;
     }
 
+    public StartFrame getStartFrame() {
+        return startFrame;
+    }
 
+    public void setStartFrame(StartFrame startFrame) {
+        this.startFrame = startFrame;
+    }
 }

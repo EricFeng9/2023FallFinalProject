@@ -505,7 +505,7 @@ public class ChessGameFrame extends JFrame {
             FileDialog fileDialog = new FileDialog(this,"选择你要保存的路径",FileDialog.SAVE);
             fileDialog.setVisible(true);
             String path = fileDialog.getDirectory()+fileDialog.getFile()+".txt";
-            chessboardComponent.getGameController().saveGameToFile(path);
+            gameController.saveGameToFile(path);
         }if (gameController.isIronMode){
             //如果是铁人游戏，则跳出弹窗提示不能保存
             System.out.println("这是铁人模式，不允许存档");
@@ -669,14 +669,10 @@ public class ChessGameFrame extends JFrame {
         return skin;
     }//fjm
 
-    public void setSkin(String skin) {
-        this.skin = skin;
-    }//fjm
-
-    public void changeSkin(String skinName){
-        if (skinName.equals("默认")){
+    public void setSkin(String skinName){
+        if (skinName.equals("默认")||skinName.equals("default")){
             this.skin = "default";
-        }else if (skinName.equals("PVZ主题")){
+        }else if (skinName.equals("PVZ主题")||skinName.equals("PVZ")){
             this.skin = "PVZ";
         }
         chessboardComponent.setSkin(skin);
@@ -723,4 +719,7 @@ public class ChessGameFrame extends JFrame {
         this.viewSuperSwap = viewSuperSwap;
     }
 
+    public SettingFrame getSettingFrame() {
+        return settingFrame;
+    }
 }
