@@ -2,6 +2,7 @@ package view;
 
 import controller.GameController;
 
+import javax.sound.sampled.*;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseEvent;
@@ -9,6 +10,7 @@ import java.awt.event.MouseListener;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.net.URL;
+import java.util.Random;
 
 /**
  * 这个类表示游戏过程中的整个游戏界面，是一切的载体
@@ -51,6 +53,9 @@ public class ChessGameFrame extends JFrame {
     private JLabel viewSuperSwapLabel;//fjm
     private SettingFrame settingFrame;//冯俊铭
     private String skin = "default";//fjm
+    Thread musicPlayer = new Thread(()->{
+        while(true) {playMusic();}
+    });// Lambda表达式 fjm播放音乐用的
     public ChessGameFrame(int width, int height) {
         setTitle("2023 CS109 Project Demo"); //设置标题
         this.WIDTH = width;//1100
@@ -96,6 +101,8 @@ public class ChessGameFrame extends JFrame {
         add(superSwapButton);
         addRefreshALlButton();
         addTestButton();
+        addMusicLabel();
+        addMusicChangeLabel();
         //addSaveButton();//冯俊铭
         this.settingButton = addSettingsButton();
         add(settingButton);
@@ -234,6 +241,7 @@ public class ChessGameFrame extends JFrame {
                         gameController.onPlayerNextStep();
                     }
                     //viewRemoveRow--;放在gamecontroller里了
+                    startplayRemoveRowMusic();//播放removerow的音乐
                     updateLables();
                 }else{
                     JOptionPane.showMessageDialog(null,"没有该道具啦！","使用失败",JOptionPane.WARNING_MESSAGE);
@@ -281,6 +289,7 @@ public class ChessGameFrame extends JFrame {
                         gameController.onPlayerNextStep();
                     }
                     //viewRemove33--;放在gamecontroller里了
+                    startplayRemove33Music();//播放remove33的音乐
                     updateLables();
                 }else{
                     JOptionPane.showMessageDialog(null,"没有该道具啦！","使用失败",JOptionPane.WARNING_MESSAGE);
@@ -328,6 +337,7 @@ public class ChessGameFrame extends JFrame {
                         gameController.onPlayerNextStep();
                     }
                     viewRefreshAll--;
+                    startplayRefreshAllMusic();//播放refreshall的音乐
                     updateLables();
                 }else{
                     JOptionPane.showMessageDialog(null,"没有该道具啦！","使用失败",JOptionPane.WARNING_MESSAGE);
@@ -431,8 +441,10 @@ public class ChessGameFrame extends JFrame {
                     //如果还有剩余的超级交换步数 则使用超级交换方法
                     int n=gameController.superswap();
                     if(n==100){
+                        startplaySuccessSwapMusic();//播放交换成功的音效
                         System.out.println("使用了超级交换");
                     } else if (n==101) {
+                        startplaySuccessSwapMusic();//播放交换成功的音效
                         System.out.println("交换了未交换的棋子");
                     } else if (n==102) {
                         JOptionPane.showMessageDialog(this, "请选择两个格子进行交换", "棋盘上已经没有棋子可以消除了", JOptionPane.WARNING_MESSAGE);
@@ -446,6 +458,7 @@ public class ChessGameFrame extends JFrame {
                     } else if (swapreturnvalue == 102) {
                         JOptionPane.showMessageDialog(this, "请选择两个格子进行交换", "棋盘上已经没有棋子可以消除了", JOptionPane.WARNING_MESSAGE);
                     } else {
+                        startplaySuccessSwapMusic();//播放交换成功的音效
                         //若交换且消除成功就更新标签
                         updateLables();
                     }
@@ -683,7 +696,431 @@ public class ChessGameFrame extends JFrame {
         background.setIcon(new ImageIcon("./icons/"+skin+"/chessGameFrame.png"));
         gameController.changeSkin();//使棋盘的棋子改变
     }//fjm 这是用来设置、更改皮肤的方法
+    private void addMusicLabel(){
+        JLabel label = new JLabel(new ImageIcon("./icons/startFrameMusic.png"));
+        label.setSize(40,40);
+        label.setLocation(5+40,5);
+        label.addMouseListener(new MouseListener() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                if (isPlayMusic){
+                    label.setIcon(new ImageIcon("./icons/startFrameMusic_close.png"));
+                    stopPlayMusic();
+                }else {
+                    label.setIcon(new ImageIcon("./icons/startFrameMusic.png"));
+                    restartPlayMusic();
+                }
+            }
 
+            @Override
+            public void mousePressed(MouseEvent e) {
+                if (isPlayMusic){
+                    label.setIcon(new ImageIcon("./icons/startFrameMusic_pressed.png"));
+                } else {
+                    label.setIcon(new ImageIcon("./icons/startFrameMusic_close_pressed.png"));
+                }
+            }
+
+            @Override
+            public void mouseReleased(MouseEvent e) {
+                if (isPlayMusic){
+                    label.setIcon(new ImageIcon("./icons/startFrameMusic.png"));
+                } else{
+                    label.setIcon(new ImageIcon("./icons/startFrameMusic_close.png"));
+                }
+            }
+
+            @Override
+            public void mouseEntered(MouseEvent e) {
+
+            }
+
+            @Override
+            public void mouseExited(MouseEvent e) {
+
+            }
+        });
+        add(label);
+    }//fjm 设置音乐控制按钮
+    private void addMusicChangeLabel(){
+        JLabel label = new JLabel(new ImageIcon("./icons/startFrameChangeMusic.png"));
+        label.setSize(40,40);
+        label.setLocation(5+40+40,5);
+        label.addMouseListener(new MouseListener() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                if (isPlayMusic){
+                    changeMusic();
+                }
+            }
+
+            @Override
+            public void mousePressed(MouseEvent e) {
+                    label.setIcon(new ImageIcon("./icons/startFrameChangeMusic_pressed.png"));
+            }
+
+            @Override
+            public void mouseReleased(MouseEvent e) {
+                    label.setIcon(new ImageIcon("./icons/startFrameChangeMusic.png"));
+            }
+
+            @Override
+            public void mouseEntered(MouseEvent e) {
+
+            }
+
+            @Override
+            public void mouseExited(MouseEvent e) {
+
+            }
+        });
+        add(label);
+    }//fjm 随机切换音乐的按钮
+    static boolean isPlayMusic = true;
+    private static int musicNum = 0;
+    static void playMusic() {// 背景音乐播放
+        try {
+            AudioInputStream ais = AudioSystem.getAudioInputStream(new File("./music/mainFrame"+musicNum+".wav"));
+            AudioFormat aif = ais.getFormat();
+            final SourceDataLine sdl;
+            DataLine.Info info = new DataLine.Info(SourceDataLine.class, aif);
+            sdl = (SourceDataLine) AudioSystem.getLine(info);
+            sdl.open(aif);
+            sdl.start();
+            FloatControl fc = (FloatControl) sdl.getControl(FloatControl.Type.MASTER_GAIN);
+            // value可以用来设置音量，从0-2.0
+            double value = 2;
+            float dB = (float) (Math.log(value == 0.0 ? 0.0001 : value) / Math.log(10.0) * 20.0);
+            fc.setValue(dB);
+            int nByte = 0;
+            int writeByte = 0;
+            final int SIZE = 1024 * 64;
+            byte[] buffer = new byte[SIZE];
+            while (nByte != -1) {// 判断 播放/暂停 状态
+
+                if(isPlayMusic) {
+
+                    nByte = ais.read(buffer, 0, SIZE);
+
+                    sdl.write(buffer, 0, nByte);
+                }else {
+
+                    nByte = ais.read(buffer, 0, 0);
+
+                }
+
+            }
+            sdl.stop();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }//背景音乐播放的方法
+
+    static void playSuccessSwapMusic() {// 交换成功音乐播放
+        try {
+            AudioInputStream ais = AudioSystem.getAudioInputStream(new File("./music/successSwapChess.wav"));
+            AudioFormat aif = ais.getFormat();
+            final SourceDataLine sdl;
+            DataLine.Info info = new DataLine.Info(SourceDataLine.class, aif);
+            sdl = (SourceDataLine) AudioSystem.getLine(info);
+            sdl.open(aif);
+            sdl.start();
+            FloatControl fc = (FloatControl) sdl.getControl(FloatControl.Type.MASTER_GAIN);
+            // value可以用来设置音量，从0-2.0
+            double value = 2;
+            float dB = (float) (Math.log(value == 0.0 ? 0.0001 : value) / Math.log(10.0) * 20.0);
+            fc.setValue(dB);
+            int nByte = 0;
+            int writeByte = 0;
+            final int SIZE = 1024 * 64;
+            byte[] buffer = new byte[SIZE];
+            while (nByte != -1) {// 判断 播放/暂停 状态
+
+                if(isPlayMusic) {
+
+                    nByte = ais.read(buffer, 0, SIZE);
+
+                    sdl.write(buffer, 0, nByte);
+                }else {
+
+                    nByte = ais.read(buffer, 0, 0);
+
+                }
+
+            }
+            sdl.stop();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }//fjm 交换成功音乐播放的方法
+
+    public void startplaySuccessSwapMusic(){
+        Thread swapSuccessfulmusicPlayer = new Thread(()->{
+            playSuccessSwapMusic();
+        });
+        swapSuccessfulmusicPlayer.start();
+    }// Lambda表达式 fjm 开始播放交换成功的音乐
+
+    // 成功进入下一关音乐播放
+    static void playNextLevelMusic() {
+        try {
+            AudioInputStream ais = AudioSystem.getAudioInputStream(new File("./music/nextLevel.wav"));
+            AudioFormat aif = ais.getFormat();
+            final SourceDataLine sdl;
+            DataLine.Info info = new DataLine.Info(SourceDataLine.class, aif);
+            sdl = (SourceDataLine) AudioSystem.getLine(info);
+            sdl.open(aif);
+            sdl.start();
+            FloatControl fc = (FloatControl) sdl.getControl(FloatControl.Type.MASTER_GAIN);
+            // value可以用来设置音量，从0-2.0
+            double value = 2;
+            float dB = (float) (Math.log(value == 0.0 ? 0.0001 : value) / Math.log(10.0) * 20.0);
+            fc.setValue(dB);
+            int nByte = 0;
+            int writeByte = 0;
+            final int SIZE = 1024 * 64;
+            byte[] buffer = new byte[SIZE];
+            while (nByte != -1) {// 判断 播放/暂停 状态
+
+                if(isPlayMusic) {
+
+                    nByte = ais.read(buffer, 0, SIZE);
+
+                    sdl.write(buffer, 0, nByte);
+                }else {
+
+                    nByte = ais.read(buffer, 0, 0);
+
+                }
+
+            }
+            sdl.stop();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }//fjm 成功下一关音乐播放的方法
+
+    public void startplayNextLevelMusic(){
+        Thread musicPlayer = new Thread(()->{
+            playNextLevelMusic();
+        });
+        musicPlayer.start();
+    }// Lambda表达式 fjm 开始播放成功下一关的音乐
+
+
+    // 失败音乐播放
+    static void playFailedMusic() {
+        try {
+            AudioInputStream ais = AudioSystem.getAudioInputStream(new File("./music/failed.wav"));
+            AudioFormat aif = ais.getFormat();
+            final SourceDataLine sdl;
+            DataLine.Info info = new DataLine.Info(SourceDataLine.class, aif);
+            sdl = (SourceDataLine) AudioSystem.getLine(info);
+            sdl.open(aif);
+            sdl.start();
+            FloatControl fc = (FloatControl) sdl.getControl(FloatControl.Type.MASTER_GAIN);
+            // value可以用来设置音量，从0-2.0
+            double value = 2;
+            float dB = (float) (Math.log(value == 0.0 ? 0.0001 : value) / Math.log(10.0) * 20.0);
+            fc.setValue(dB);
+            int nByte = 0;
+            int writeByte = 0;
+            final int SIZE = 1024 * 64;
+            byte[] buffer = new byte[SIZE];
+            while (nByte != -1) {// 判断 播放/暂停 状态
+
+                if(isPlayMusic) {
+
+                    nByte = ais.read(buffer, 0, SIZE);
+
+                    sdl.write(buffer, 0, nByte);
+                }else {
+
+                    nByte = ais.read(buffer, 0, 0);
+
+                }
+
+            }
+            sdl.stop();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }//fjm 失败成功音乐播放的方法
+
+    public void startplayFailedMusic(){
+        Thread musicPlayer = new Thread(()->{
+            playFailedMusic();
+        });
+        musicPlayer.start();
+    }// Lambda表达式 fjm 开始播放失败的音乐
+
+    //removerow音效
+    static void playRemoveRowMusic() {
+        try {
+            AudioInputStream ais = AudioSystem.getAudioInputStream(new File("./music/removeRow.wav"));
+            AudioFormat aif = ais.getFormat();
+            final SourceDataLine sdl;
+            DataLine.Info info = new DataLine.Info(SourceDataLine.class, aif);
+            sdl = (SourceDataLine) AudioSystem.getLine(info);
+            sdl.open(aif);
+            sdl.start();
+            FloatControl fc = (FloatControl) sdl.getControl(FloatControl.Type.MASTER_GAIN);
+            // value可以用来设置音量，从0-2.0
+            double value = 2;
+            float dB = (float) (Math.log(value == 0.0 ? 0.0001 : value) / Math.log(10.0) * 20.0);
+            fc.setValue(dB);
+            int nByte = 0;
+            int writeByte = 0;
+            final int SIZE = 1024 * 64;
+            byte[] buffer = new byte[SIZE];
+            while (nByte != -1) {// 判断 播放/暂停 状态
+
+                if(isPlayMusic) {
+
+                    nByte = ais.read(buffer, 0, SIZE);
+
+                    sdl.write(buffer, 0, nByte);
+                }else {
+
+                    nByte = ais.read(buffer, 0, 0);
+
+                }
+
+            }
+            sdl.stop();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }//fjm removerow音乐播放的方法
+
+    public void startplayRemoveRowMusic(){
+        Thread musicPlayer = new Thread(()->{
+            playRemoveRowMusic();
+        });
+        musicPlayer.start();
+    }// Lambda表达式 fjm 开始removerow的音乐
+
+
+    //remove33音效
+    static void playRemove33Music() {
+        try {
+            AudioInputStream ais = AudioSystem.getAudioInputStream(new File("./music/remove33.wav"));
+            AudioFormat aif = ais.getFormat();
+            final SourceDataLine sdl;
+            DataLine.Info info = new DataLine.Info(SourceDataLine.class, aif);
+            sdl = (SourceDataLine) AudioSystem.getLine(info);
+            sdl.open(aif);
+            sdl.start();
+            FloatControl fc = (FloatControl) sdl.getControl(FloatControl.Type.MASTER_GAIN);
+            // value可以用来设置音量，从0-2.0
+            double value = 2;
+            float dB = (float) (Math.log(value == 0.0 ? 0.0001 : value) / Math.log(10.0) * 20.0);
+            fc.setValue(dB);
+            int nByte = 0;
+            int writeByte = 0;
+            final int SIZE = 1024 * 64;
+            byte[] buffer = new byte[SIZE];
+            while (nByte != -1) {// 判断 播放/暂停 状态
+
+                if(isPlayMusic) {
+
+                    nByte = ais.read(buffer, 0, SIZE);
+
+                    sdl.write(buffer, 0, nByte);
+                }else {
+
+                    nByte = ais.read(buffer, 0, 0);
+
+                }
+
+            }
+            sdl.stop();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }//fjm remove33音乐播放的方法
+
+    public void startplayRemove33Music(){
+        Thread musicPlayer = new Thread(()->{
+            playRemove33Music();
+        });
+        musicPlayer.start();
+    }// Lambda表达式 fjm 开始播放remove33的音乐
+
+    //refreshAll音效
+    static void playRefreshAllMusic() {
+        try {
+            AudioInputStream ais = AudioSystem.getAudioInputStream(new File("./music/refreshAll.wav"));
+            AudioFormat aif = ais.getFormat();
+            final SourceDataLine sdl;
+            DataLine.Info info = new DataLine.Info(SourceDataLine.class, aif);
+            sdl = (SourceDataLine) AudioSystem.getLine(info);
+            sdl.open(aif);
+            sdl.start();
+            FloatControl fc = (FloatControl) sdl.getControl(FloatControl.Type.MASTER_GAIN);
+            // value可以用来设置音量，从0-2.0
+            double value = 2;
+            float dB = (float) (Math.log(value == 0.0 ? 0.0001 : value) / Math.log(10.0) * 20.0);
+            fc.setValue(dB);
+            int nByte = 0;
+            int writeByte = 0;
+            final int SIZE = 1024 * 64;
+            byte[] buffer = new byte[SIZE];
+            while (nByte != -1) {// 判断 播放/暂停 状态
+
+                if(isPlayMusic) {
+
+                    nByte = ais.read(buffer, 0, SIZE);
+
+                    sdl.write(buffer, 0, nByte);
+                }else {
+
+                    nByte = ais.read(buffer, 0, 0);
+
+                }
+
+            }
+            sdl.stop();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }//fjm remove33音乐播放的方法
+
+    public void startplayRefreshAllMusic(){
+        Thread musicPlayer = new Thread(()->{
+            playRefreshAllMusic();
+        });
+        musicPlayer.start();
+    }// Lambda表达式 fjm 开始播放remove33的音乐
+
+    public void startPlayMusic(){//这个是第一次开始播放时使用的方法
+        musicPlayer.start();
+    }
+
+    public void stopPlayMusic(){
+        isPlayMusic=false;
+    }
+    public void restartPlayMusic(){//这个是音乐线程启动后才使用的方法
+        isPlayMusic=true;
+    }
+    public void changeMusic(){
+
+        while (true){
+            int newmusicNum = (int)((Math.random()/2)*10);//math.random是返回[0,1.0]之间的小数，/2就是[0,0.4],再*10就是[0-4]
+            if (newmusicNum!=musicNum){
+                musicNum=newmusicNum;
+                musicPlayer.stop();
+                musicPlayer=null;
+                musicPlayer=new Thread(()->{
+                    while(true) {playMusic();}
+                });// Lambda表达式 fjm播放音乐用的
+                musicPlayer.start();
+                break;
+            }
+        }
+        JOptionPane.showMessageDialog(this, "当前音乐编号为：" + musicNum, "背景音乐切换成功", JOptionPane.WARNING_MESSAGE);
+        System.out.println("当前新生成的音乐编号为："+musicNum);
+    }//fjm 更改正在播放的音乐
     public void registerSettingFrame(SettingFrame settingFrame){
         this.settingFrame = settingFrame;
     }//冯俊铭 给主窗口绑定设置窗口
@@ -721,5 +1158,13 @@ public class ChessGameFrame extends JFrame {
 
     public SettingFrame getSettingFrame() {
         return settingFrame;
+    }
+
+    public int getViewlevel() {
+        return viewlevel;
+    }
+
+    public void setViewlevel(int viewlevel) {
+        this.viewlevel = viewlevel;
     }
 }

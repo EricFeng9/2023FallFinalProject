@@ -1,13 +1,13 @@
 package view;
 
 import controller.GameController;
-import model.Chessboard;
-import view.ChessGameFrame;
 
+import javax.sound.sampled.*;
 import javax.swing.*;
 import java.awt.*;
-import java.net.URI;
-import java.net.URL;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.io.File;
 
 public class StartFrame extends JFrame {
     private final int WIDTH;
@@ -16,6 +16,10 @@ public class StartFrame extends JFrame {
     ChessGameFrame mainFrame;
     JTextPane notiecLable;
     JLabel background;
+    Thread musicPlayer = new Thread(()->{
+        while(true) {playMusic();}
+    });// Lambda表达式
+
     public StartFrame(int width, int height, GameController gameController, ChessGameFrame mainFrame){
         this.WIDTH=width;//900
         this.HEIGHT = height;//600
@@ -30,7 +34,12 @@ public class StartFrame extends JFrame {
         add(notiecLable);
         addLoadButton();
         addStartButton();
+        addMusicLabel();//fjm 添加音乐控件
         add(background);
+        /*startFrameMusic.start();
+        @SuppressWarnings("unused")
+        int musicOpenLab = 1;*/
+        musicPlayer.start();
         background.setVisible(true);
         this.setResizable(false);//冯俊铭 设置窗口不能改变大小
     }
@@ -79,8 +88,10 @@ public class StartFrame extends JFrame {
                     System.out.println("当前游戏模式为："+mainFrame.getViewMode());//试输出模式
                     //更新标签
                     mainFrame.updateLables();
+                    mainFrame.startPlayMusic();//fjm 打开主界面音乐播放
                     mainFrame.setVisible(true);
                     this.setVisible(false);
+                    isPlayMusic=false;
                 }if (returnError==1002){
                     //1002表示导入成功且为自动模式
                     mainFrame.getGameControllerToLoadViewMode(gameController);
@@ -89,8 +100,10 @@ public class StartFrame extends JFrame {
                     System.out.println("当前游戏模式为："+mainFrame.getViewMode());//试输出模式
                     //更新标签
                     mainFrame.updateLables();
+                    mainFrame.startPlayMusic();//fjm 打开主界面音乐播放
                     mainFrame.setVisible(true);
                     this.setVisible(false);
+                    isPlayMusic=false;
                     //更新标签
                     /*mainFrame.updateLables();
                     mainFrame.setVisible(true);
@@ -121,8 +134,103 @@ public class StartFrame extends JFrame {
             StartNewGameFrame startNewGameFrame = new StartNewGameFrame();
             startNewGameFrame.startNewGameFrame(mainFrame,gameController);
             startNewGameFrame.setVisible(true);
+            isPlayMusic=false;
         });
     }//冯俊铭 23/12/11/17:56
+    private void addMusicLabel(){
+        JLabel label = new JLabel(new ImageIcon("./icons/startFrameMusic.png"));
+        label.setSize(40,40);
+        label.setLocation(40,40);
+        label.addMouseListener(new MouseListener() {
+
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                if (isPlayMusic){
+                    label.setIcon(new ImageIcon("./icons/startFrameMusic_close.png"));
+                    isPlayMusic=false;
+                }else {
+                    label.setIcon(new ImageIcon("./icons/startFrameMusic.png"));
+                    isPlayMusic=true;
+                }
+            }
+
+            @Override
+            public void mousePressed(MouseEvent e) {
+                if (isPlayMusic){
+                    label.setIcon(new ImageIcon("./icons/startFrameMusic_pressed.png"));
+                } else {
+                    label.setIcon(new ImageIcon("./icons/startFrameMusic_close_pressed.png"));
+                }
+            }
+
+            @Override
+            public void mouseReleased(MouseEvent e) {
+                if (isPlayMusic){
+                    label.setIcon(new ImageIcon("./icons/startFrameMusic.png"));
+                } else {
+                    label.setIcon(new ImageIcon("./icons/startFrameMusic_close.png"));
+                }
+            }
+
+            @Override
+            public void mouseEntered(MouseEvent e) {
+
+            }
+
+            @Override
+            public void mouseExited(MouseEvent e) {
+
+            }
+        });
+        add(label);
+    }//fjm 设置音乐控制按钮
+    static boolean isPlayMusic = true;
+    static void playMusic() {// 背景音乐播放
+
+        try {
+            AudioInputStream ais = AudioSystem.getAudioInputStream(new File("./music/StartFrame.wav"));
+            AudioFormat aif = ais.getFormat();
+            final SourceDataLine sdl;
+            DataLine.Info info = new DataLine.Info(SourceDataLine.class, aif);
+            sdl = (SourceDataLine) AudioSystem.getLine(info);
+            sdl.open(aif);
+            sdl.start();
+            FloatControl fc = (FloatControl) sdl.getControl(FloatControl.Type.MASTER_GAIN);
+            // value可以用来设置音量，从0-2.0
+            double value = 2;
+            float dB = (float) (Math.log(value == 0.0 ? 0.0001 : value) / Math.log(10.0) * 20.0);
+            fc.setValue(dB);
+            int nByte = 0;
+            int writeByte = 0;
+            final int SIZE = 1024 * 64;
+            byte[] buffer = new byte[SIZE];
+            while (nByte != -1) {// 判断 播放/暂停 状态
+
+                if(isPlayMusic) {
+
+                    nByte = ais.read(buffer, 0, SIZE);
+
+                    sdl.write(buffer, 0, nByte);
+
+                }else {
+
+                    nByte = ais.read(buffer, 0, 0);
+
+                }
+
+            }
+            sdl.stop();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }//fjm 背景音乐播放的方法
+    public void stopPlayMusic(){
+        isPlayMusic=false;
+    }//fjm
+    public void restartPlayMusic(){//这个是音乐线程启动后才使用的方法
+        isPlayMusic=true;
+    }//fjm
     private JLabel addBackgroundLabel(){
         JLabel backgroundLabel = new JLabel(new ImageIcon("./icons/startFrame.png"));
         backgroundLabel.setSize(900,600);

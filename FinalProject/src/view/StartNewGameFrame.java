@@ -18,6 +18,7 @@ public class StartNewGameFrame extends JFrame {
     String gamename;
     Choice modechoice;
     Choice skinchoice;
+    Choice levelchoice;
     JCheckBox isIronCheckbox;
     JCheckBox canUseProp;
     JLabel background;
@@ -58,7 +59,7 @@ public class StartNewGameFrame extends JFrame {
         setLayout(null);
         this.mainFrame=mainFrame;
         addStartButton();
-        setSize(310,420);//300 400
+        setSize(310,420+50);//300 450
         //addstartLabel();
         addnameTextField();
         addsavingLabel();
@@ -71,6 +72,9 @@ public class StartNewGameFrame extends JFrame {
         add(modechoice);
         this.skinchoice = addSkinchoice();
         add(skinchoice);
+        this.levelchoice=addLevelchoice();
+        add(levelchoice);
+        addLevelLabel();// TODO: 2023/12/28
         addSkinLabel();
         this.background =addBackgroundLabel();
         add(background);
@@ -83,7 +87,7 @@ public class StartNewGameFrame extends JFrame {
         JButton startButton = new JButton("开始游戏！");
         Font font = new Font("雅黑",Font.PLAIN,20);
         startButton.setFont(font);
-        startButton.setLocation(77,300+30);
+        startButton.setLocation(77,300+30+50);
         startButton.setSize(146,46);
         startButton.addActionListener(e -> {
             //先把gameController中的view取出来（无所谓这个view长什么样）
@@ -144,6 +148,8 @@ public class StartNewGameFrame extends JFrame {
                 mainFrame.setViewRefreshAll(1);
                 mainFrame.setViewSuperSwap(2);
             }
+            //设置关卡
+            gameController.setLevel(Integer.parseInt(levelchoice.getSelectedItem()));
             //设置皮肤
             mainFrame.setSkin(skinchoice.getSelectedItem());
             mainFrame.repaint();
@@ -151,12 +157,19 @@ public class StartNewGameFrame extends JFrame {
             if (gamename==null) {
                 JOptionPane.showMessageDialog(this,"还没有输入存档名","还不能开始噢",JOptionPane.WARNING_MESSAGE);
             }else {
+                try{
+                    mainFrame.startPlayMusic();//fjm 打开主界面音乐播放(第一次打开主界面调用这个方法)
+                }catch (Exception e1){
+                    //第二次及以上打开主界面时，就不能用start方法，会报错
+                    mainFrame.restartPlayMusic();//fjm 第二次打开主界面就要用这个方法
+                }
                 mainFrame.updateLables();//初始化参数后要更新标签
                 mainFrame.getGameControllerToLoadViewMode(gameController);
                 System.out.println("——————游戏初始化完毕——————");
                 System.out.println("当前游戏存档名为："+gamename);//试输出存档名
                 System.out.println("当前游戏模式为："+mainFrame.getViewMode());//试输出模式
                 System.out.println("当前游戏主题为："+mainFrame.getSkin());//试输出当前皮肤
+                System.out.println("当前游戏关卡为："+mainFrame.getViewlevel());//试输出当前关卡
                 mainFrame.setVisible(true);
                 this.setVisible(false);
             }
@@ -247,12 +260,38 @@ public class StartNewGameFrame extends JFrame {
         choice.setVisible(true);
         return choice;
     }//fjm
+
+    private void addLevelLabel(){
+        JLabel startLabel = new JLabel();
+        Font font =new Font("雅黑",Font.BOLD,20);
+        startLabel.setFont(font);
+        startLabel.setText("选择关卡");
+        startLabel.setLocation(10,140+50+50);
+        startLabel.setSize(90,20);
+        this.add(startLabel);
+        startLabel.setVisible(true);
+    }//fjm
+    private Choice addLevelchoice(){
+        Choice choice = new Choice();
+        Font font =new Font("雅黑",Font.PLAIN,15);
+        choice.add("1");
+        choice.add("2");
+        choice.add("3");
+        choice.add("4");
+        choice.add("5");
+        choice.setFont(font);
+        choice.setName("默认");
+        choice.setLocation(110,140+50+50);
+        choice.setSize(170,15);
+        choice.setVisible(true);
+        return choice;
+    }//fjm
     private JCheckBox addCheckBox1(){
         JCheckBox checkBox1 = new JCheckBox();
         Font font =new Font("雅黑",Font.PLAIN,17);
         checkBox1.setFont(font);
         checkBox1.setText("铁人游戏（无法存档）");
-        checkBox1.setLocation(20,200+50);
+        checkBox1.setLocation(20,200+50+50);
         checkBox1.setSize(200,17);
         checkBox1.setOpaque(false);//设置组件为透明
         return checkBox1;
@@ -262,14 +301,14 @@ public class StartNewGameFrame extends JFrame {
         Font font =new Font("雅黑",Font.PLAIN,17);
         checkBox2.setFont(font);
         checkBox2.setText("禁用道具");
-        checkBox2.setLocation(20,240+50);
+        checkBox2.setLocation(20,240+50+50);
         checkBox2.setSize(200,17);
         checkBox2.setOpaque(false);//组件为透明
         return checkBox2;
     }
     private JLabel addBackgroundLabel(){
         JLabel backgroundLabel = new JLabel(new ImageIcon("./icons/startNewGameFrame.png"));
-        backgroundLabel.setSize(300,400);
+        backgroundLabel.setSize(300,400+50);
         backgroundLabel.setLocation(0,0);
         return backgroundLabel;
     }//fjm 设置背景图

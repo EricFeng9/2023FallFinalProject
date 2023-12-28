@@ -105,8 +105,9 @@ public class SettingFrame extends JDialog {
             int option = JOptionPane.showConfirmDialog(this,"确定退出吗？游戏可能没有保存","请再次确认",JOptionPane.OK_CANCEL_OPTION);
             if (option==JOptionPane.OK_OPTION){
                 this.setVisible(false);
+                mainFrame.stopPlayMusic();
                 mainFrame.setVisible(false);
-                startFrame.setVisible(true);
+                startFrame.restartPlayMusic();//使主界面音乐重新播放
             }
         });
         return button;

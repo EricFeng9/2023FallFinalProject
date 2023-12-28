@@ -503,12 +503,14 @@ public class GameController implements GameListener {
                 levelsteps = 15;
                 if (steps<=levelsteps) {
                     if (score >= minscore) {
+                        mainFrame.startplayNextLevelMusic();//播放成功进入下一关的音乐
                         System.out.println("pass");//TODO:弹窗您成功通过第一关，选择窗口是否进入第二关 or save；
                         yesOrNoNextLevel();
                     }
 
                 }
                 if (steps>=levelsteps && score < minscore) {
+                    mainFrame.startplayFailedMusic();//播放失败音乐
                     System.out.println("Sorry,you failed");//TODO:弹窗对不起您失败了。
                     yesOrNoRestartLevel();
                 }
@@ -519,11 +521,13 @@ public class GameController implements GameListener {
                 levelsteps = 15;//test
                 if (steps<=levelsteps ) {
                     if (score >= minscore) {
+                        mainFrame.startplayNextLevelMusic();//播放成功进入下一关的音乐
                         System.out.println("pass");//TODO:弹窗您成功通过第二关，选择窗口是否进入第三关 or save；
                         yesOrNoNextLevel();
                     }
                 }
                 if (steps>=levelsteps && score < minscore) {
+                    mainFrame.startplayFailedMusic();//播放失败音乐
                     System.out.println("Sorry,you failed");//TODO:弹窗对不起您失败了。
                     yesOrNoRestartLevel();
                 }
@@ -535,12 +539,14 @@ public class GameController implements GameListener {
                 showsteps = levelsteps - steps;
                 if (steps<=levelsteps) {
                     if (score >= minscore) {
+                        mainFrame.startplayNextLevelMusic();//播放成功进入下一关的音乐
                         System.out.println("pass");//TODO:弹窗您成功通过第三关，gratulation；
                         yesOrNoNextLevel();
                     }
 
                 }
                 if (steps>=levelsteps && score < minscore) {
+                    mainFrame.startplayFailedMusic();//播放失败音乐
                     System.out.println("Sorry,you failed");//TODO:弹窗对不起您失败了。
                     yesOrNoRestartLevel();
                 }
@@ -551,6 +557,7 @@ public class GameController implements GameListener {
                 levelsteps = 15;
                 if (steps<=levelsteps) {
                     if (score >= minscore) {
+                        mainFrame.startplayNextLevelMusic();//播放成功进入下一关的音乐
                         score = 0;
                         System.out.println("pass");//TODO:弹窗您成功通过第四关，gratulation；
                         yesOrNoNextLevel();
@@ -558,6 +565,7 @@ public class GameController implements GameListener {
 
                 }
                 if (steps>=levelsteps && score < minscore) {
+                    mainFrame.startplayFailedMusic();//播放失败音乐
                     System.out.println("Sorry,you failed");//TODO:弹窗对不起您失败了。
                 }
                 break;
@@ -567,6 +575,7 @@ public class GameController implements GameListener {
                 levelsteps = 10;
                 if (steps<=levelsteps) {
                     if (score >= minscore) {
+                        mainFrame.startplayNextLevelMusic();//播放成功进入下一关的音乐
                         int option = JOptionPane.showConfirmDialog(mainFrame,"是否重新开始？\n(“是”则在当前棋盘重新开始新的游戏，“否”则停留在当前棋盘)","恭喜!你完成了所有关卡", JOptionPane.YES_NO_CANCEL_OPTION);
                         if (option==JOptionPane.YES_OPTION){
                             score = 0;
@@ -614,6 +623,7 @@ public class GameController implements GameListener {
 
                 }
                 if (steps>=levelsteps && score < minscore) {
+                    mainFrame.startplayFailedMusic();//播放失败音乐
                     System.out.println("Sorry,you failed");//TODO:弹窗对不起您失败了。
                     yesOrNoRestartLevel();
                 }
@@ -637,6 +647,7 @@ public class GameController implements GameListener {
         int option = JOptionPane.showConfirmDialog(mainFrame,"是否返回主界面？\n(“是”返回主界面，“否”则停留在当前棋盘)","失败啦", JOptionPane.YES_NO_OPTION);
         if (option == JOptionPane.YES_OPTION){
             mainFrame.setVisible(false);
+            mainFrame.stopPlayMusic();//把主界面音乐关了
             mainFrame.getSettingFrame().getStartFrame().setVisible(true);
         }
     }
@@ -646,8 +657,10 @@ public class GameController implements GameListener {
             System.out.println("调用了自动化方法");
             if (supersteps>0){
                 superswap();//执行超级交换
+                mainFrame.startplaySuccessSwapMusic();//播放交换成功音乐
             }else {
                 onPlayerSwapChess();//先执行交换消除
+                mainFrame.startplaySuccessSwapMusic();//播放交换成功音乐
             }
             onPlayerNextStep();//掉落
             onPlayerNextStep();//生成新的
@@ -861,12 +874,12 @@ public class GameController implements GameListener {
             }//消除完毕
             view.repaint();//冯俊铭 !!交换后执行repaint()重绘该组件 避免摇一摇更新
             steps++;
-            supersteps--;//！记得减掉超级步数
             //swapdelete = false;
             System.out.println("成功执行了交换");
             isnextlevel();//冯俊铭 判断是否进入下一关！！之前没加这个所以换不了关
             nextstep = 1;//fjm !!一旦交换，则将nextstep必须改成1 避免交换后nextstep执行case2方法导致棋子不下落而直接生成新的
             view.repaint();
+            supersteps--;//！记得减掉超级步数
             System.out.println("当前剩余超级交换步数："+supersteps);
             return 100;//100表示交换成功
         }else if(model.ismatch()){
