@@ -59,7 +59,7 @@ public class StartNewGameFrame extends JFrame {
         setLayout(null);
         this.mainFrame=mainFrame;
         addStartButton();
-        setSize(310,420+50);//300 450
+        setSize(300,420+50);//300 450
         //addstartLabel();
         addnameTextField();
         addsavingLabel();
@@ -150,6 +150,8 @@ public class StartNewGameFrame extends JFrame {
             }
             //设置关卡
             gameController.setLevel(Integer.parseInt(levelchoice.getSelectedItem()));
+            //设置无条件悔棋次数
+            gameController.setBackgameChance(2);
             //设置皮肤
             mainFrame.setSkin(skinchoice.getSelectedItem());
             mainFrame.repaint();
@@ -165,6 +167,7 @@ public class StartNewGameFrame extends JFrame {
                 }
                 mainFrame.updateLables();//初始化参数后要更新标签
                 mainFrame.getGameControllerToLoadViewMode(gameController);
+                gameController.autoSaveGameToFile();//先保存一次棋盘
                 System.out.println("——————游戏初始化完毕——————");
                 System.out.println("当前游戏存档名为："+gamename);//试输出存档名
                 System.out.println("当前游戏模式为："+mainFrame.getViewMode());//试输出模式

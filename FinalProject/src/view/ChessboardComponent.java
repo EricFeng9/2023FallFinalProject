@@ -49,6 +49,10 @@ public class ChessboardComponent extends JComponent {
     }
 
 
+    public CellComponent[][] getGridComponents() {
+        return gridComponents;
+    }
+
     /**
      * This method represents how to initiate ChessComponent
      * according to Chessboard information
@@ -60,11 +64,15 @@ public class ChessboardComponent extends JComponent {
                 if (grid[i][j].getPiece() != null) {
                     ChessPiece chessPiece = grid[i][j].getPiece();
                     ChessComponent chessComponent = null;
-                    chessComponent = new ChessComponent(CHESS_SIZE, chessPiece,skin);
+                    chessComponent = new ChessComponent(CHESS_SIZE, chessPiece,skin,0);
                     gridComponents[i][j].add(chessComponent);
                 }
             }
         }
+    }
+
+    public int getCHESS_SIZE() {
+        return CHESS_SIZE;
     }
 
     public void initiateGridComponents() {

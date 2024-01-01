@@ -50,7 +50,7 @@ public class StartFrame extends JFrame {
         textArea.setOpaque(false);
         textArea.setFocusable(false);
         //textArea.setText("<html>这是南方科技大学2023秋JavaA期末project<br>开发者：冯俊铭、江易明<br>这就是一个测试版，请勿外传<br>当前exe版本:1.0Alpha</html>");
-        textArea.setText("这是南方科技大学2023秋JavaA期末project\n               开发者：冯俊铭、江易明\n                      测试版，请勿外传\n                  当前exe版本:1.1Alpha");
+        textArea.setText("这是南方科技大学2023秋JavaA期末project\n               开发者：冯俊铭、江易明\n                      测试版，请勿外传\n                       当前exe版本:1.2");
         textArea.setSize(300,90);
         textArea.setLocation((WIDTH-textArea.getWidth())/2,400);
         textArea.setFont(font);

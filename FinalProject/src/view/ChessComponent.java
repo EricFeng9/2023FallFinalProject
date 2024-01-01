@@ -5,6 +5,8 @@ import model.ChessPiece;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.awt.image.ImageObserver;
 import java.io.IOException;
 
@@ -20,12 +22,13 @@ public class ChessComponent extends JComponent {
     Image image2;
     Image image3;
     Image image4;
-
+    int istip = 0;//fjm istip = 0则不绘制提示图标，=1则绘制提示图标
     private static int n = 0; //统计对象创建的次数
-    public ChessComponent(int size, ChessPiece chessPiece,String skin) {
+    public ChessComponent(int size, ChessPiece chessPiece,String skin,int isTip) {
+        this.istip= isTip;//fjm
         this.skin = skin;
         this.selected = false;
-        setSize(size/2, size/2);
+        setSize(size, size);
         setLocation(0,0);
         setVisible(true);
         this.chessPiece = chessPiece;
@@ -48,7 +51,6 @@ public class ChessComponent extends JComponent {
         this.selected = selected;
     }
 
-
     @Override
     protected void paintComponent(Graphics g) {
         ImageObserver imageObserver = new ImageObserver() {
@@ -66,8 +68,11 @@ public class ChessComponent extends JComponent {
             case "💎" -> {
                 try {
                     g2.drawImage(image1, (getWidth() - image1.getWidth(imageObserver)) / 2, (getWidth() - image1.getWidth(imageObserver)) / 2, null);
-                    //g.setColor(Color.red);
-                    //g.drawOval(0, 0, getWidth(), getHeight());
+                    if (istip==1){//istip=1则绘制提示图标
+                        g.setColor(Color.red);
+                        g.drawOval(0, 0, getWidth(), getHeight());
+                    }
+
                 } catch (Exception e) {
                     System.out.println("没有读取到图片");
                     g2.setFont(font);
@@ -79,6 +84,10 @@ public class ChessComponent extends JComponent {
                 //替换"⚪"的图片放在这 50*50
                 try {
                     g2.drawImage(image2, (getWidth() - image2.getWidth(imageObserver)) / 2, (getWidth() - image2.getWidth(imageObserver)) / 2, null);
+                    if (istip==1){//istip=1则绘制提示图标
+                        g.setColor(Color.red);
+                        g.drawOval(0, 0, getWidth(), getHeight());
+                    }
                 } catch (Exception e) {
                     System.out.println("没有读取到图片");
                     g2.setFont(font);
@@ -90,6 +99,10 @@ public class ChessComponent extends JComponent {
                 //替换"▲"的图片放在这 50*50
                 try {
                     g2.drawImage(image3, (getWidth() - image3.getWidth(imageObserver)) / 2, (getWidth() - image3.getWidth(imageObserver)) / 2, null);
+                    if (istip==1){//istip=1则绘制提示图标
+                        g.setColor(Color.red);
+                        g.drawOval(0, 0, getWidth(), getHeight());
+                    }
                 } catch (Exception e) {
                     System.out.println("没有读取到图片");
                     g2.setFont(font);
@@ -101,6 +114,10 @@ public class ChessComponent extends JComponent {
                 //替换"🔶"的图片放在这 50*50
                 try {
                     g2.drawImage(image4, (getWidth() - image4.getWidth(imageObserver)) / 2, (getWidth() - image4.getWidth(imageObserver)) / 2, null);
+                    if (istip==1){//istip=1则绘制提示图标
+                        g.setColor(Color.red);
+                        g.drawOval(0, 0, getWidth(), getHeight());
+                    }
                 } catch (Exception e) {
                     System.out.println("没有读取到图片");
                     g2.setFont(font);

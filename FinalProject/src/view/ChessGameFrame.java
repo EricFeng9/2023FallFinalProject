@@ -40,12 +40,14 @@ public class ChessGameFrame extends JFrame {
     private JButton nextStepButton;//fjm
     private JButton swapButton;//fjm
     private JButton modeTransferButton;//fjm
+    private JButton backButton;//fjm
     private JLabel background;//fjm
     private JLabel settingButton;//fjm
     private JLabel viewSuperSteps;//fjm
     private JLabel removeRowButton;//fjm
     private JLabel remove33Button;//fjm
     private JLabel refreshAllButton;//fjm
+    private JLabel reArrangeAllButton;//fjm
     private JLabel superSwapButton;//fjm
     private JLabel viewRemove33Label;//fjm
     private JLabel viewRemoveRowLabel;//fjm
@@ -58,7 +60,7 @@ public class ChessGameFrame extends JFrame {
     });// Lambda表达式 fjm播放音乐用的
     public ChessGameFrame(int width, int height) {
         setTitle("2023 CS109 Project Demo"); //设置标题
-        this.WIDTH = width;//1100
+        this.WIDTH = width;//1090
         this.HEIGTH = height;//810
         this.ONE_CHESS_SIZE = (HEIGTH * 4 / 5) / 9;
 
@@ -67,7 +69,7 @@ public class ChessGameFrame extends JFrame {
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE); //设置程序关闭按键，如果点击右上方的叉就游戏全部关闭了
         setLayout(null);
 
-
+        addLevelDemandLabel();
         this.scoreLabel =loadScoreLabel();
         this.stepLabel=loadStepLabel();
         this.levelLable=loadLevelLabel();
@@ -91,16 +93,20 @@ public class ChessGameFrame extends JFrame {
         this.modeTransferButton=addModeTransferButton();
         add(modeTransferButton);
         addChessboard();
+        this.backButton=addBackButton();
+        add(backButton);
         this.removeRowButton = addRemoveRowButton();
         add(removeRowButton);
         this.remove33Button =addRemove33Button();
         add(remove33Button);
         this.refreshAllButton = addRefreshALlButton();
         add(refreshAllButton);
+        this.reArrangeAllButton=addIsDeadEnd();
+        add(reArrangeAllButton);
         this.superSwapButton = addSuperSwapButton();
         add(superSwapButton);
         addRefreshALlButton();
-        addTestButton();
+        addTipButton();
         addMusicLabel();
         addMusicChangeLabel();
         //addSaveButton();//冯俊铭
@@ -193,7 +199,7 @@ public class ChessGameFrame extends JFrame {
         Font font = new Font("雅黑", Font.BOLD, 30);
         label.setFont(font);
         label.setSize(90,30);
-        label.setLocation(15+80, 120+80);
+        label.setLocation(15+80, 120+80-30);
         return label;
     }
     private JLabel addViewRemove33Label(){
@@ -201,7 +207,7 @@ public class ChessGameFrame extends JFrame {
         Font font = new Font("雅黑", Font.BOLD, 30);
         label.setFont(font);
         label.setSize(90,30);
-        label.setLocation(15+80, 120+120+80);
+        label.setLocation(15+80, 120+120+80-30);
         return label;
     }
     private JLabel addViewRefreshAllLabel(){
@@ -209,7 +215,7 @@ public class ChessGameFrame extends JFrame {
         Font font = new Font("雅黑", Font.BOLD, 30);
         label.setFont(font);
         label.setSize(90,30);
-        label.setLocation(15+80, 120+120+120+80);
+        label.setLocation(15+80, 120+120+120+80-30);
         return label;
     }
     private JLabel addViewSuperSwapLabel(){
@@ -217,7 +223,7 @@ public class ChessGameFrame extends JFrame {
         Font font = new Font("雅黑", Font.BOLD, 30);
         label.setFont(font);
         label.setSize(90,30);
-        label.setLocation(15+80, 120+120+120+120+80);
+        label.setLocation(15+80, 120+120+120+120+80-30);
         return label;
     }
     /**
@@ -227,6 +233,7 @@ public class ChessGameFrame extends JFrame {
     private JLabel addRemoveRowButton() {
         JLabel label = new JLabel(" ");//设置显示在按钮上的文字
         label.setIcon(new ImageIcon("./icons/"+skin+"/removeRowButton.png"));
+        label.setToolTipText("可以消除十字路径上的棋子");//冯俊铭 提示信息
         label.addMouseListener(new MouseListener() {
             @Override
             public void mouseClicked(MouseEvent e) {
@@ -268,7 +275,7 @@ public class ChessGameFrame extends JFrame {
 
             }
         });
-        label.setLocation(15, 120);
+        label.setLocation(15, 120-30);
         label.setSize(100, 100);
         label.setFont(new Font("Rockwell", Font.BOLD, 20));
         return label;
@@ -276,6 +283,7 @@ public class ChessGameFrame extends JFrame {
     private JLabel addRemove33Button() {
         JLabel label = new JLabel(" ");//设置显示在按钮上的文字
         label.setIcon(new ImageIcon("./icons/"+skin+"/remove33.png"));
+        label.setToolTipText("可以消除3*3范围内的棋子");//冯俊铭 提示信息
         label.addMouseListener(new MouseListener() {
             @Override
             public void mouseClicked(MouseEvent e) {
@@ -317,7 +325,7 @@ public class ChessGameFrame extends JFrame {
 
             }
         });
-        label.setLocation(15, 120+120);
+        label.setLocation(15, 120+120-30);
         label.setSize(100, 100);
         label.setFont(new Font("Rockwell", Font.BOLD, 20));
         return label;
@@ -326,6 +334,7 @@ public class ChessGameFrame extends JFrame {
     private JLabel addRefreshALlButton() {
         JLabel label = new JLabel(" ");//设置显示在按钮上的文字
         label.setIcon(new ImageIcon("./icons/"+skin+"/RefreshAll.png"));
+        label.setToolTipText("可以清除全屏的棋子");//冯俊铭 提示信息
         label.addMouseListener(new MouseListener() {
             @Override
             public void mouseClicked(MouseEvent e) {
@@ -365,7 +374,7 @@ public class ChessGameFrame extends JFrame {
 
             }
         });
-        label.setLocation(15, 120+120+120);
+        label.setLocation(15, 120+120+120-30);
         label.setSize(100, 100);
         label.setFont(new Font("Rockwell", Font.BOLD, 20));
         return label;
@@ -374,12 +383,14 @@ public class ChessGameFrame extends JFrame {
     private JLabel addSuperSwapButton() {
         JLabel label = new JLabel(" ");//设置显示在按钮上的文字
         label.setIcon(new ImageIcon("./icons/"+skin+"/SuperSwap.png"));
+        label.setToolTipText("可以为您提供3步超级交换步数（无限制交换棋子）");//冯俊铭 提示信息
         label.addMouseListener(new MouseListener() {
             @Override
             public void mouseClicked(MouseEvent e) {
                 if (viewSuperSwap>0){
                     //点击后 将超级交换步数设置为3
                     gameController.supersteps=3;
+                    JOptionPane.showMessageDialog(null,"超级交换步数已重置为3步","使用成功",JOptionPane.WARNING_MESSAGE);
                     System.out.println("进入超级交换模式");
                     viewSuperSteps.setText("当前剩余超级交换步数为："+gameController.supersteps);
                     viewSuperSwap--;
@@ -410,12 +421,52 @@ public class ChessGameFrame extends JFrame {
 
             }
         });
-        label.setLocation(15, 120+120+120+120);
+        label.setLocation(15, 120+120+120+120-30);
         label.setSize(100, 100);
         return label;
     }
 
+    private JLabel addIsDeadEnd() {
+        JLabel label = new JLabel(" ");//设置显示在按钮上的文字
+        label.setIcon(new ImageIcon("./icons/isdeadend.png"));
+        label.setToolTipText("死局检测，若死局则自动重排棋盘");//冯俊铭 提示信息
+        label.addMouseListener(new MouseListener() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                if (gameController.isdeadend()){
+                    JOptionPane.showMessageDialog(null,"检测到当前棋盘死棋，已重新生成棋盘","重排成功",JOptionPane.WARNING_MESSAGE);
+                    gameController.reArrangeAll();//执行重排方法
+                }else{
+                    JOptionPane.showMessageDialog(null,"当前还有可交换棋子，不能重排","使用失败",JOptionPane.WARNING_MESSAGE);
+                }
+                //点击监听器 鼠标点击后执行的代码
+            }
 
+            @Override
+            public void mousePressed(MouseEvent e) {
+                label.setIcon(new ImageIcon("./icons/isdeadend_pressed.png"));
+            }
+
+            @Override
+            public void mouseReleased(MouseEvent e) {
+                label.setIcon(new ImageIcon("./icons/isdeadend.png"));
+            }
+
+            @Override
+            public void mouseEntered(MouseEvent e) {
+
+            }
+
+            @Override
+            public void mouseExited(MouseEvent e) {
+
+            }
+        });
+        label.setLocation(15, 120+120+120+120+120-30);
+        label.setSize(100, 100);
+        label.setFont(new Font("Rockwell", Font.BOLD, 20));
+        return label;
+    }//冯俊铭 添加重排按钮
 
     public int getViewScores() {
         return viewScores;
@@ -434,7 +485,7 @@ public class ChessGameFrame extends JFrame {
     }
 
     private JButton addSwapConfirmButton() {
-        JButton button = new JButton("Confirm Swap");
+        JButton button = new JButton("确认交换");
         button.addActionListener((e) -> {
             if (viewMode.equals("手动模式")) {
                 if (gameController.supersteps>0){
@@ -475,12 +526,12 @@ public class ChessGameFrame extends JFrame {
         });
         button.setLocation(HEIGTH, HEIGTH / 10 + 200);
         button.setSize(200, 60);
-        button.setFont(new Font("Rockwell", Font.BOLD, 20));
+        button.setFont(new Font("雅黑", Font.BOLD, 20));
         return button;
     }
 
     private JButton addNextStepButton() {
-        JButton button = new JButton("Next Step");
+        JButton button = new JButton("下一步");
         button.addActionListener((e) -> {
             if (gameController.getMode()==1){
                 //已解决：case1是下落，case2是补充新棋子，现在有一个问题，如果我在交换前先点击一次nextstep，那么就进入case2，则交换后再点击nextstep则不会下落，直接生成新棋子了
@@ -496,18 +547,23 @@ public class ChessGameFrame extends JFrame {
         });//fjm
         button.setLocation(HEIGTH, HEIGTH / 10 + 280);
         button.setSize(200, 60);
-        button.setFont(new Font("Rockwell", Font.BOLD, 20));
+        button.setFont(new Font("雅黑", Font.BOLD, 20));
         return button;
     }//冯俊铭
 
-    private JButton addTestButton() {
-        JButton button = new JButton("Test");
+    private JButton addTipButton() {
+        JButton button = new JButton("来点提示");
         button.addActionListener((e) -> {
-            gameController.isdeadend();
+            if (gameController.isdeadend()){
+                JOptionPane.showMessageDialog(this, "点击左下角死局检测按钮进行重排", "没有可以交换的棋子啦！", JOptionPane.WARNING_MESSAGE);
+            }else {
+                gameController.showTipPoints();
+            }
+
         });//fjm
         button.setLocation(HEIGTH, HEIGTH / 10 + 280+80);
         button.setSize(200, 60);
-        button.setFont(new Font("Rockwell", Font.BOLD, 20));
+        button.setFont(new Font("雅黑", Font.BOLD, 20));
         add(button);
         return button;
     }//冯俊铭
@@ -606,7 +662,16 @@ public class ChessGameFrame extends JFrame {
         });
         return button;
     }//fjm
-
+    private JButton addBackButton(){
+        JButton button = new JButton("悔棋");
+        button.setLocation(HEIGTH, HEIGTH / 10 + 440+80);
+        button.setSize(200, 60);
+        button.setFont(new Font("雅黑", Font.BOLD, 20));
+        button.addActionListener(e ->{
+            gameController.isbackGame();
+        });
+        return button;
+    }//fjm
     public void updateLables(){
         {//更新分数标签
             this.viewScores=chessboardComponent.getGameController().getScore();//从gameController里直接获得游戏分数 -> gameController里的score变量
@@ -696,6 +761,45 @@ public class ChessGameFrame extends JFrame {
         background.setIcon(new ImageIcon("./icons/"+skin+"/chessGameFrame.png"));
         gameController.changeSkin();//使棋盘的棋子改变
     }//fjm 这是用来设置、更改皮肤的方法
+
+    private void addLevelDemandLabel(){
+        JLabel label = new JLabel(new ImageIcon("./icons/levelDemand.png"));
+        label.setSize(40,40);
+        label.setLocation(HEIGTH+130, (HEIGTH / 10)-50);
+        String currentInfo = "";
+        try{currentInfo = gameController.getCurrentLevelInfo();}
+        catch (Exception e){
+            currentInfo = "null";
+        }
+        label.addMouseListener(new MouseListener() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+
+            }
+
+            @Override
+            public void mousePressed(MouseEvent e) {
+
+            }
+
+            @Override
+            public void mouseReleased(MouseEvent e) {
+
+            }
+
+            @Override
+            public void mouseEntered(MouseEvent e) {
+                label.setToolTipText(gameController.getCurrentLevelInfo());
+            }
+
+            @Override
+            public void mouseExited(MouseEvent e) {
+
+            }
+        });
+
+        add(label);
+    }//fjm 随机切换音乐的按钮
     private void addMusicLabel(){
         JLabel label = new JLabel(new ImageIcon("./icons/startFrameMusic.png"));
         label.setSize(40,40);

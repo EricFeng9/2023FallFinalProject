@@ -28,7 +28,6 @@ public class CellComponent extends JPanel {
         setLocation(location);
         setSize(size, size);
         this.background = background;
-
     }
 
     @Override
