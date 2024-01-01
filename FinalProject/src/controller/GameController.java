@@ -1151,15 +1151,15 @@ public class GameController implements GameListener {
             }
         }
         //向上
-//        for (int i = 3; i <=9 ; i++) {
-//            for (int j = 2; j <=9; j++) {
-//                ChessboardPoint point1=new ChessboardPoint(i,j);
-//                ChessboardPoint point2=new ChessboardPoint(i-1,j);
-//                if (model.newcanswap(point1,point2)){
-//                    result=false;
-//                }
-//            }
-//        }
+        for (int i = 1; i <8 ; i++) {
+            for (int j = 0; j <8; j++) {
+                ChessboardPoint point1=new ChessboardPoint(i,j);
+                ChessboardPoint point2=new ChessboardPoint(i-1,j);
+                if (model.canSwap(point1,point2)){
+                    result=false;
+                }
+            }
+        }
         System.out.println(result);
         return result;
     }

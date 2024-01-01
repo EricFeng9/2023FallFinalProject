@@ -67,58 +67,7 @@ public class StartFrame extends JFrame {
         button.setFont(new Font("雅黑", Font.PLAIN, 20));
         add(button);
         button.addActionListener(e -> {
-            System.out.println("Click load");
-            FileDialog fileDialog = new FileDialog(this,"选择你的存档",FileDialog.LOAD);
-            fileDialog.setVisible(true);
-            String path = fileDialog.getDirectory()+fileDialog.getFile();
-            String savingname = fileDialog.getFile();//获取读到的文件名
-            System.out.println("用户选中了:"+path);
-            System.out.println("用户选中了:"+savingname);
-            String[] cutname = savingname.split("\\.");//根据.把文件名分开，拿到后缀名
-            String nameExtension = cutname[cutname.length-1];//最后一个部分就是.txt后缀名
-            if (!nameExtension.equals("txt")){
-                JOptionPane.showMessageDialog(this,"错误：存档文件格式应该为txt文本","错误101:载入错误",JOptionPane.WARNING_MESSAGE);
-            }else{
-                int returnError = gameController.loadGameFromFile(path);//执行文件载入方法并且得到个返回值
-                if (returnError==1001){
-                    //1001表示导入成功且为手动模式
-                    mainFrame.getGameControllerToLoadViewMode(gameController);
-                    System.out.println("——————游戏导入化完毕——————");
-                    System.out.println("当前游戏存档名为："+gameController.getName());//试输出存档名
-                    System.out.println("当前游戏模式为："+mainFrame.getViewMode());//试输出模式
-                    //更新标签
-                    mainFrame.updateLables();
-                    mainFrame.startPlayMusic();//fjm 打开主界面音乐播放
-                    mainFrame.setVisible(true);
-                    this.setVisible(false);
-                    isPlayMusic=false;
-                }if (returnError==1002){
-                    //1002表示导入成功且为自动模式
-                    mainFrame.getGameControllerToLoadViewMode(gameController);
-                    System.out.println("——————游戏导入化完毕——————");
-                    System.out.println("当前游戏存档名为："+gameController.getName());//试输出存档名
-                    System.out.println("当前游戏模式为："+mainFrame.getViewMode());//试输出模式
-                    //更新标签
-                    mainFrame.updateLables();
-                    mainFrame.startPlayMusic();//fjm 打开主界面音乐播放
-                    mainFrame.setVisible(true);
-                    this.setVisible(false);
-                    isPlayMusic=false;
-                    //更新标签
-                    /*mainFrame.updateLables();
-                    mainFrame.setVisible(true);
-                    this.setVisible(false);*/
-                } else if (returnError==102) {
-                    JOptionPane.showMessageDialog(this,"错误：载入存档不符合棋盘规则","错误102:载入错误",JOptionPane.WARNING_MESSAGE);
-                    //如果加载不成功 就弹出报错框
-                } else if (returnError==103){
-                    JOptionPane.showMessageDialog(this,"错误：载入存档中存在违规棋子","错误103:载入错误",JOptionPane.WARNING_MESSAGE);
-                    //如果加载不成功 就弹出报错框
-                } else if (returnError==104) {
-                    JOptionPane.showMessageDialog(this,"错误：未预料的错误，请联系开发者处理","错误104:载入错误",JOptionPane.WARNING_MESSAGE);
-                    //如果加载不成功 就弹出报错框
-                }
-            }
+            mainFrame.Load();
 
         });
 

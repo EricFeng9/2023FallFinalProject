@@ -125,7 +125,7 @@ public class Chessboard {
                     if (b1.equals(stringsgrid[srow1 + 1][scol1]) && b1.equals(stringsgrid[srow1 + 2][scol1])) {
                         result = true;
                     }//2向下寻找
-                    if (b1.equals(stringsgrid[srow1 - 1][scol1]) && b1.equals(stringsgrid[srow1 + 1][col1])) {
+                    if (b1.equals(stringsgrid[srow1 - 1][scol1]) && b1.equals(stringsgrid[srow1 + 1][scol1])) {
                         result = true;
                     }//2向上下寻找
 
@@ -151,7 +151,7 @@ public class Chessboard {
                     if (b1.equals(stringsgrid[srow1 + 1][scol1]) && b1.equals(stringsgrid[srow1 + 2][scol1])) {
                         result = true;
                     }//2向下寻找
-                    if (b1.equals(stringsgrid[srow1 - 1][scol1]) && b1.equals(stringsgrid[srow1 + 1][col1])) {
+                    if (b1.equals(stringsgrid[srow1 - 1][scol1]) && b1.equals(stringsgrid[srow1 + 1][scol1])) {
                         result = true;
                     }//2向上下寻找
 
